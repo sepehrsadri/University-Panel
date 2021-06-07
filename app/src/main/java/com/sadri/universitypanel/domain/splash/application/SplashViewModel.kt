@@ -11,7 +11,6 @@ import com.sadri.universitypanel.domain.splash.core.ports.incoming.GetUserAuthen
 import com.sadri.universitypanel.infrastructure.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -29,13 +28,17 @@ class SplashViewModel @Inject constructor(
     viewModelScope.launch {
       getUserAuthenticationState.handle().collect { state ->
         when (state) {
-          is UserAuthenticationState.NotAuthenticated -> {
+          UserAuthenticationState.NOT_AUTHENTICATED -> {
             Timber.d(" WTF : called with NotAuthenticated ")
             _viewState.value = Event(SplashViewState(SplashUserState.NOT_AUTHENTICATED))
           }
-          is UserAuthenticationState.Authenticated -> {
-            Timber.d(" WTF : called with Authenticated ")
-            _viewState.value = Event(SplashViewState(SplashUserState.AUTHENTICATED))
+          UserAuthenticationState.AUTHENTICATED_STUDENT -> {
+            Timber.d(" WTF : called with AUTHENTICATED_STUDENT ")
+            _viewState.value = Event(SplashViewState(SplashUserState.AUTHENTICATED_STUDENT))
+          }
+          UserAuthenticationState.AUTHENTICATED_MASTER -> {
+            Timber.d(" WTF : called with AUTHENTICATED_MASTER ")
+            _viewState.value = Event(SplashViewState(SplashUserState.AUTHENTICATED_MASTER))
           }
         }
       }

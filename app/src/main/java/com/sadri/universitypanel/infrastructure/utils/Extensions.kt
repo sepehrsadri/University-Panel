@@ -2,6 +2,7 @@ package com.sadri.universitypanel.infrastructure.utils
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
+import com.sadri.universitypanel.domain.login.core.model.UserRule
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import timber.log.Timber
@@ -27,4 +28,8 @@ suspend fun <T> getResult(call: suspend () -> Response<T>): ApiResult<T> {
     Timber.e(e)
     ApiResult.Error(e)
   }
+}
+
+fun String?.getUserRule(): UserRule {
+  return UserRule.getRule(this)
 }

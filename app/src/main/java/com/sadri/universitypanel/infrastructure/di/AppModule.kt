@@ -1,9 +1,9 @@
 package com.sadri.universitypanel.infrastructure.di
 
 import android.content.Context
-import com.sadri.universitypanel.domain.home.core.HomeFacade
-import com.sadri.universitypanel.domain.home.core.ports.incoming.GetAuthenticatedUserInfo
-import com.sadri.universitypanel.domain.home.core.ports.outgoing.ReadUserInfoDatabase
+import com.sadri.universitypanel.domain.student.home.core.StudentHomeFacade
+import com.sadri.universitypanel.domain.student.home.core.ports.incoming.GetAuthenticatedStudentInfo
+import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.ReadAuthenticatedStudentInfoDatabase
 import com.sadri.universitypanel.domain.login.core.LoginFacade
 import com.sadri.universitypanel.domain.login.core.ports.incoming.OnUserAuthenticate
 import com.sadri.universitypanel.domain.login.core.ports.outgoing.SaveUserAuthenticationDatabase
@@ -13,7 +13,7 @@ import com.sadri.universitypanel.domain.login.infrastructure.AuthenticationDataS
 import com.sadri.universitypanel.domain.splash.core.SplashFacade
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.GetUserAuthenticationState
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthenticationDatabase
-import com.sadri.universitypanel.domain.splash.infrastructure.UserAuthenticationDatabaseAdapter
+import com.sadri.universitypanel.domain.splash.infrastructure.AuthenticatedStudentAuthenticationDatabaseAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,19 +34,19 @@ object AppModule {
   @Provides
   @Singleton
   fun provideUserAuthenticationDatabaseAdapter(@ApplicationContext context: Context): UserAuthenticationDatabase {
-    return UserAuthenticationDatabaseAdapter(context)
+    return AuthenticatedStudentAuthenticationDatabaseAdapter(context)
   }
 
   @Provides
   @Singleton
   fun provideSaveUserAuthenticationDatabase(@ApplicationContext context: Context): SaveUserAuthenticationDatabase {
-    return UserAuthenticationDatabaseAdapter(context)
+    return AuthenticatedStudentAuthenticationDatabaseAdapter(context)
   }
 
   @Provides
   @Singleton
-  fun provideReadUserInfoDatabase(@ApplicationContext context: Context): ReadUserInfoDatabase {
-    return UserAuthenticationDatabaseAdapter(context)
+  fun provideReadUserInfoDatabase(@ApplicationContext context: Context): ReadAuthenticatedStudentInfoDatabase {
+    return AuthenticatedStudentAuthenticationDatabaseAdapter(context)
   }
 
   @Provides
@@ -63,8 +63,8 @@ object AppModule {
 
   @Provides
   @Singleton
-  fun provideGetAuthenticatedUserInfo(readUserInfoDatabase: ReadUserInfoDatabase): GetAuthenticatedUserInfo {
-    return HomeFacade(readUserInfoDatabase)
+  fun provideGetAuthenticatedUserInfo(readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase): GetAuthenticatedStudentInfo {
+    return StudentHomeFacade(readAuthenticatedStudentInfoDatabase)
   }
 
   @Provides
