@@ -3,7 +3,6 @@ package com.sadri.universitypanel.infrastructure.utils
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import com.sadri.universitypanel.domain.login.core.model.UserRule
-import kotlinx.coroutines.withContext
 import retrofit2.Response
 import timber.log.Timber
 
@@ -16,20 +15,27 @@ val Context.dataStore by preferencesDataStore(
 suspend fun <T> getResult(call: suspend () -> Response<T>): ApiResult<T> {
   return try {
     val response = call()
-    Timber.d("WTF : response ${response.code()}")
+    val responseCode = response.code()
     if (response.isSuccessful) {
       ApiResult.Success(
         response.body()
       )
     } else {
-      ApiResult.Error(RuntimeException("notSuccessfull"))
+      ApiResult.Error(
+        text = "Server Error !",
+        code = responseCode
+      )
     }
   } catch (e: Exception) {
     Timber.e(e)
-    ApiResult.Error(e)
+    ApiResult.Error(text = "Network Error !")
   }
 }
 
 fun String?.getUserRule(): UserRule {
   return UserRule.getRule(this)
+}
+
+fun ApiResult<*>.isError(): Boolean {
+  return this is ApiResult.Error
 }

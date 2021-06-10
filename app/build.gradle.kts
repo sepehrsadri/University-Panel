@@ -78,7 +78,7 @@ dependencies {
   val navigationVersion = "2.3.4"
   implementation("androidx.navigation:navigation-fragment-ktx:$navigationVersion")
   implementation("androidx.navigation:navigation-ui-ktx:$navigationVersion")
-  implementation("androidx.navigation:navigation-compose:1.0.0-alpha09")
+  implementation("androidx.navigation:navigation-compose:2.4.0-SNAPSHOT")
 
 
   // Logger

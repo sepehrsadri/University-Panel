@@ -1,5 +1,10 @@
 package com.sadri.universitypanel.infrastructure.di
 
+import com.sadri.universitypanel.domain.login.core.ports.outgoing.SendAuthenticateUserRequest
+import com.sadri.universitypanel.domain.login.infrastructure.AuthenticationDataSource
+import com.sadri.universitypanel.domain.login.infrastructure.AuthenticationDataSourceImpl
+import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthProvider
+import com.sadri.universitypanel.infrastructure.utils.AuthHeaderTokenInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,6 +15,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -17,25 +23,59 @@ import javax.inject.Singleton
 object NetworkModule {
   @Provides
   @Singleton
-  fun provideRetrofit(): Retrofit {
-    return getRetrofit()
+  @Named("withoutToken")
+  fun provideOkHttpClientWithoutToken(): OkHttpClient {
+    return okHttpClientBuilder.build()
   }
 
-  private const val TIMEOUT_SECONDS: Long = 15
+  @Provides
+  @Singleton
+  fun provideAuthHeaderTokenInterceptor(userAuthProvider: UserAuthProvider): AuthHeaderTokenInterceptor {
+    return AuthHeaderTokenInterceptor(userAuthProvider)
+  }
 
-  private val CLIENT by lazy {
+  @Provides
+  @Singleton
+  @Named("withToken")
+  fun provideOkHttpClientWithToken(authHeaderTokenInterceptor: AuthHeaderTokenInterceptor): OkHttpClient {
+    return okHttpClientBuilder.addInterceptor(authHeaderTokenInterceptor).build()
+  }
+
+  @Provides
+  @Singleton
+  @Named("withoutToken")
+  fun provideRetrofitWithoutToken(
+    @Named("withoutToken") okHttpClient: OkHttpClient
+  ): Retrofit {
+    return getRetrofit(okHttpClient)
+  }
+
+  @Provides
+  @Singleton
+  @Named("withToken")
+  fun provideRetrofitWithToken(
+    @Named("withToken") okHttpClient: OkHttpClient
+  ): Retrofit {
+    return getRetrofit(okHttpClient)
+  }
+
+  @Provides
+  @Singleton
+  fun provideSendAuthenticateUserRequest(@Named("withoutToken") retrofit: Retrofit): SendAuthenticateUserRequest {
+    return AuthenticationDataSourceImpl(
+      provideService(retrofit, AuthenticationDataSource::class.java)
+    )
+  }
+
+  private val okHttpClientBuilder by lazy {
     val httpClient = OkHttpClient.Builder()
-      .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-      .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-      .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+      .readTimeout(25_000, TimeUnit.MILLISECONDS)
+      .writeTimeout(25_000, TimeUnit.MILLISECONDS)
+      .connectTimeout(25_000, TimeUnit.MILLISECONDS)
 
-    getLoggingInterceptor().let {
-      httpClient.addInterceptor(
-        it
-      )
+    getLoggingInterceptor().let { loggerInterceptor ->
+      httpClient.addInterceptor(loggerInterceptor)
     }
-
-    httpClient.build()
   }
 
   private const val API_BASE_URL = "http://192.168.0.249:8080/api/"
@@ -47,18 +87,7 @@ object NetworkModule {
     return logger
   }
 
-  private fun getRetrofit(): Retrofit {
-    val httpClient = OkHttpClient.Builder()
-      .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-      .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-      .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-
-    getLoggingInterceptor().let { interceptor ->
-      httpClient.addInterceptor(
-        interceptor
-      )
-    }
-
+  private fun getRetrofit(okHttpClient: OkHttpClient): Retrofit {
     val builder = Retrofit.Builder()
       .baseUrl(
         API_BASE_URL
@@ -66,7 +95,7 @@ object NetworkModule {
         GsonConverterFactory.create()
       )
       .client(
-        CLIENT
+        okHttpClient
       )
 
     return builder.build()
@@ -79,4 +108,3 @@ object NetworkModule {
     return retrofit.create(clazz)
   }
 }
-

@@ -10,6 +10,7 @@ import com.sadri.universitypanel.domain.splash.core.model.UserAuthenticationStat
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.GetUserAuthenticationState
 import com.sadri.universitypanel.infrastructure.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -26,6 +27,7 @@ class SplashViewModel @Inject constructor(
   init {
     Timber.d("WTF : init ! ")
     viewModelScope.launch {
+      delay(1000L)
       getUserAuthenticationState.handle().collect { state ->
         when (state) {
           UserAuthenticationState.NOT_AUTHENTICATED -> {

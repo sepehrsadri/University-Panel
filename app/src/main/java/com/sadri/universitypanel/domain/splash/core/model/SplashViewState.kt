@@ -5,7 +5,6 @@ data class SplashViewState(
 )
 
 enum class SplashUserState {
-  LOADING,
   AUTHENTICATED_STUDENT,
   AUTHENTICATED_MASTER,
   NOT_AUTHENTICATED

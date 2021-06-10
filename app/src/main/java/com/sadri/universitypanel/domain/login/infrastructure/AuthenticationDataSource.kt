@@ -7,12 +7,12 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface AuthenticationDataSource {
-  @POST("student/login")
+  @POST("auth/student")
   suspend fun authenticateStudent(
     @Body authenticationRequest: AuthenticateRequest
   ): Response<AuthenticationResponse>
 
-  @POST("master/login")
+  @POST("auth/instructor")
   suspend fun authenticateMaster(
     @Body authenticationRequest: AuthenticateRequest
   ): Response<AuthenticationResponse>

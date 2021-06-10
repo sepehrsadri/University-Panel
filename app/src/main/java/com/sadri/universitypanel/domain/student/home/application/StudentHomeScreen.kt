@@ -7,5 +7,7 @@ import androidx.compose.runtime.livedata.observeAsState
 @Composable
 fun StudentHomeScreen(viewModel: StudentHomeViewModel) {
   val username = viewModel.viewState.observeAsState("").value
-  Text(text = " Username : $username")
+  Text(text = " Student Name : $username")
+
+
 }

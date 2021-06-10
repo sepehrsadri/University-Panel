@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
@@ -22,9 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sadri.universitypanel.R
+import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.login.core.model.UserRule
 import com.sadri.universitypanel.domain.login.core.model.UserRuleChipState
 
@@ -36,12 +40,18 @@ val ruleChipsList = listOf(
 @ExperimentalMaterialApi
 @Composable
 fun LoginScreen(
+  modifier: Modifier = Modifier,
   viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-  modifier: Modifier = Modifier
 ) {
   val number = viewModel.number.observeAsState().value!!
   val password = viewModel.password.observeAsState().value!!
   val rule = viewModel.rule.observeAsState().value!!
+
+  viewModel.error.observeAsState().value?.getContentIfNotHandled()?.let {
+    if (it is ToastViewState.Show) {
+      SnackBar(modifier = modifier, text = it.text, dismiss = { viewModel.dismissToast() })
+    }
+  }
 
   Column(
     modifier = modifier
@@ -69,7 +79,11 @@ fun LoginScreen(
       value = number,
       onValueChange = { viewModel.onNumberChanged(it) },
       label = { Text(text = "ID") },
-      modifier = modifier.padding(8.dp)
+      modifier = modifier.padding(8.dp),
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Number,
+        imeAction = ImeAction.Next
+      ),
     )
 
     OutlinedTextField(
@@ -125,6 +139,26 @@ fun RuleChips(
           )
         }
       )
+    }
+  }
+}
+
+@Composable
+fun SnackBar(
+  modifier: Modifier,
+  text: String,
+  dismiss: () -> Unit
+) {
+  Column {
+    androidx.compose.material.Snackbar(
+      modifier = modifier.padding(8.dp),
+      action = {
+        Button(onClick = { dismiss() }) {
+          Text("Hide")
+        }
+      },
+    ) {
+      Text(text = text)
     }
   }
 }
