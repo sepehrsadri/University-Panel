@@ -31,6 +31,7 @@ import com.sadri.universitypanel.R
 import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.login.core.model.UserRule
 import com.sadri.universitypanel.domain.login.core.model.UserRuleChipState
+import com.sadri.universitypanel.infrastructure.ui.SnackBar
 
 val ruleChipsList = listOf(
   UserRuleChipState.Student,
@@ -47,11 +48,11 @@ fun LoginScreen(
   val password = viewModel.password.observeAsState().value!!
   val rule = viewModel.rule.observeAsState().value!!
 
-  viewModel.error.observeAsState().value?.getContentIfNotHandled()?.let {
-    if (it is ToastViewState.Show) {
-      SnackBar(modifier = modifier, text = it.text, dismiss = { viewModel.dismissToast() })
+    viewModel.error.observeAsState().value?.getContentIfNotHandled()?.let {
+      if (it is ToastViewState.Show) {
+        SnackBar(modifier = modifier, text = it.text, dismiss = { viewModel.dismissToast() })
+      }
     }
-  }
 
   Column(
     modifier = modifier
@@ -139,26 +140,6 @@ fun RuleChips(
           )
         }
       )
-    }
-  }
-}
-
-@Composable
-fun SnackBar(
-  modifier: Modifier,
-  text: String,
-  dismiss: () -> Unit
-) {
-  Column {
-    androidx.compose.material.Snackbar(
-      modifier = modifier.padding(8.dp),
-      action = {
-        Button(onClick = { dismiss() }) {
-          Text("Hide")
-        }
-      },
-    ) {
-      Text(text = text)
     }
   }
 }

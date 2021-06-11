@@ -8,12 +8,16 @@ import com.sadri.universitypanel.domain.login.core.ports.outgoing.SendAuthentica
 import com.sadri.universitypanel.domain.splash.core.SplashFacade
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.AuthStateChanged
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.GetUserAuthenticationState
+import com.sadri.universitypanel.domain.splash.core.ports.incoming.RequestLogout
+import com.sadri.universitypanel.domain.splash.core.ports.outgoing.ClearUserInfoDatabase
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthProvider
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthenticationDatabase
 import com.sadri.universitypanel.domain.splash.infrastructure.AuthenticatedStudentAuthenticationDatabaseAdapter
 import com.sadri.universitypanel.domain.splash.infrastructure.UserAuthProviderImpl
 import com.sadri.universitypanel.domain.student.home.core.StudentHomeFacade
 import com.sadri.universitypanel.domain.student.home.core.ports.incoming.GetAuthenticatedStudentInfo
+import com.sadri.universitypanel.domain.student.home.core.ports.incoming.GetStudentCourses
+import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.GetCoursesRequest
 import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.ReadAuthenticatedStudentInfoDatabase
 import dagger.Module
 import dagger.Provides
@@ -51,6 +55,12 @@ object AppModule {
 
   @Provides
   @Singleton
+  fun provideClearUserInfoDatabase(@ApplicationContext context: Context): ClearUserInfoDatabase {
+    return AuthenticatedStudentAuthenticationDatabaseAdapter(context)
+  }
+
+  @Provides
+  @Singleton
   fun provideAuthStateChanged(readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase): AuthStateChanged {
     return UserAuthProviderImpl(readAuthenticatedStudentInfoDatabase)
   }
@@ -66,18 +76,48 @@ object AppModule {
   fun provideOnUserAuthenticate(
     sendAuthenticateUserRequest: SendAuthenticateUserRequest,
     saveUserAuthenticationDatabase: SaveUserAuthenticationDatabase,
+    clearUserInfoDatabase: ClearUserInfoDatabase,
     authStateChanged: AuthStateChanged
   ): OnUserAuthenticate {
     return LoginFacade(
       sendAuthenticateUserRequest = sendAuthenticateUserRequest,
       saveUserAuthenticationDatabase = saveUserAuthenticationDatabase,
-      authStateChanged = authStateChanged
+      authStateChanged = authStateChanged,
+      clearUserInfoDatabase = clearUserInfoDatabase
     )
   }
 
   @Provides
   @Singleton
-  fun provideGetAuthenticatedUserInfo(readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase): GetAuthenticatedStudentInfo {
-    return StudentHomeFacade(readAuthenticatedStudentInfoDatabase)
+  fun provideRequestLogout(
+    sendAuthenticateUserRequest: SendAuthenticateUserRequest,
+    saveUserAuthenticationDatabase: SaveUserAuthenticationDatabase,
+    clearUserInfoDatabase: ClearUserInfoDatabase,
+    authStateChanged: AuthStateChanged
+  ): RequestLogout {
+    return LoginFacade(
+      sendAuthenticateUserRequest = sendAuthenticateUserRequest,
+      saveUserAuthenticationDatabase = saveUserAuthenticationDatabase,
+      authStateChanged = authStateChanged,
+      clearUserInfoDatabase = clearUserInfoDatabase
+    )
+  }
+
+  @Provides
+  @Singleton
+  fun provideGetAuthenticatedUserInfo(
+    readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
+    getCoursesRequest: GetCoursesRequest
+  ): GetAuthenticatedStudentInfo {
+    return StudentHomeFacade(readAuthenticatedStudentInfoDatabase, getCoursesRequest)
+  }
+
+  @Provides
+  @Singleton
+  fun provideGetStudentCourses(
+    readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
+    getCoursesRequest: GetCoursesRequest
+  ): GetStudentCourses {
+    return StudentHomeFacade(readAuthenticatedStudentInfoDatabase, getCoursesRequest)
   }
 }

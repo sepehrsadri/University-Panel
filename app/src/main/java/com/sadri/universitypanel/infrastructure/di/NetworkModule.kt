@@ -4,6 +4,9 @@ import com.sadri.universitypanel.domain.login.core.ports.outgoing.SendAuthentica
 import com.sadri.universitypanel.domain.login.infrastructure.AuthenticationDataSource
 import com.sadri.universitypanel.domain.login.infrastructure.AuthenticationDataSourceImpl
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthProvider
+import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.GetCoursesRequest
+import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSource
+import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSourceImpl
 import com.sadri.universitypanel.infrastructure.utils.AuthHeaderTokenInterceptor
 import dagger.Module
 import dagger.Provides
@@ -67,6 +70,18 @@ object NetworkModule {
     )
   }
 
+  @Provides
+  @Singleton
+  fun provideStudentDataSource(@Named("withToken") retrofit: Retrofit): StudentDataSource {
+    return provideService(retrofit, StudentDataSource::class.java)
+  }
+
+  @Provides
+  @Singleton
+  fun provideGetCoursesRequest(studentDataSource: StudentDataSource): GetCoursesRequest {
+    return StudentDataSourceImpl(studentDataSource)
+  }
+
   private val okHttpClientBuilder by lazy {
     val httpClient = OkHttpClient.Builder()
       .readTimeout(25_000, TimeUnit.MILLISECONDS)
@@ -78,7 +93,7 @@ object NetworkModule {
     }
   }
 
-  private const val API_BASE_URL = "http://192.168.0.249:8080/api/"
+  private const val API_BASE_URL = "http://192.168.0.210:8080/api/"
 
   private fun getLoggingInterceptor(): Interceptor {
     val logger = HttpLoggingInterceptor()

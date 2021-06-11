@@ -2,12 +2,13 @@ package com.sadri.universitypanel.domain.splash.infrastructure
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
-import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.ReadAuthenticatedStudentInfoDatabase
 import com.sadri.universitypanel.domain.login.core.model.AuthenticationResponse
 import com.sadri.universitypanel.domain.login.core.model.UserRule
 import com.sadri.universitypanel.domain.login.core.ports.outgoing.SaveUserAuthenticationDatabase
 import com.sadri.universitypanel.domain.splash.core.model.UserAuthenticationState
+import com.sadri.universitypanel.domain.splash.core.ports.outgoing.ClearUserInfoDatabase
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthenticationDatabase
+import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.ReadAuthenticatedStudentInfoDatabase
 import com.sadri.universitypanel.infrastructure.utils.PreferencesKeys
 import com.sadri.universitypanel.infrastructure.utils.dataStore
 import com.sadri.universitypanel.infrastructure.utils.getUserRule
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.map
 class AuthenticatedStudentAuthenticationDatabaseAdapter(
   private val context: Context
 ) : UserAuthenticationDatabase, SaveUserAuthenticationDatabase,
-  ReadAuthenticatedStudentInfoDatabase {
+  ReadAuthenticatedStudentInfoDatabase, ClearUserInfoDatabase {
 
   override suspend fun getState(): Flow<UserAuthenticationState> {
     return context.dataStore.data.map { preferences ->
@@ -53,6 +54,12 @@ class AuthenticatedStudentAuthenticationDatabaseAdapter(
       preferences[PreferencesKeys.USER_TOKEN] = authenticationResponse.token
       preferences[PreferencesKeys.USER_NAME] = authenticationResponse.name
       preferences[PreferencesKeys.USER_RULE] = userRule.getKey()
+    }
+  }
+
+  override suspend fun clear() {
+    context.dataStore.edit { preferences ->
+      preferences.clear()
     }
   }
 

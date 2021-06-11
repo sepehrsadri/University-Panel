@@ -7,13 +7,16 @@ import com.sadri.universitypanel.domain.login.core.ports.incoming.OnUserAuthenti
 import com.sadri.universitypanel.domain.login.core.ports.outgoing.SaveUserAuthenticationDatabase
 import com.sadri.universitypanel.domain.login.core.ports.outgoing.SendAuthenticateUserRequest
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.AuthStateChanged
+import com.sadri.universitypanel.domain.splash.core.ports.incoming.RequestLogout
+import com.sadri.universitypanel.domain.splash.core.ports.outgoing.ClearUserInfoDatabase
 import com.sadri.universitypanel.infrastructure.utils.ApiResult
 
 class LoginFacade(
   private val sendAuthenticateUserRequest: SendAuthenticateUserRequest,
   private val saveUserAuthenticationDatabase: SaveUserAuthenticationDatabase,
+  private val clearUserInfoDatabase: ClearUserInfoDatabase,
   private val authStateChanged: AuthStateChanged
-) : OnUserAuthenticate {
+) : OnUserAuthenticate, RequestLogout {
   override suspend fun handle(
     userRule: UserRule,
     authenticateRequest: AuthenticateRequest
@@ -33,5 +36,9 @@ class LoginFacade(
     }
 
     return authenticationResponse
+  }
+
+  override suspend fun logout() {
+    clearUserInfoDatabase.clear()
   }
 }

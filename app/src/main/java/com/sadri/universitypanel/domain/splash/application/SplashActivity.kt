@@ -4,26 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.sadri.universitypanel.domain.login.application.LoginScreen
-import com.sadri.universitypanel.domain.login.application.LoginViewModel
 import com.sadri.universitypanel.domain.master.home.application.MasterHomeScreen
-import com.sadri.universitypanel.domain.master.home.application.MasterHomeViewModel
 import com.sadri.universitypanel.domain.splash.core.model.SplashUserState
 import com.sadri.universitypanel.domain.student.home.application.StudentHomeScreen
-import com.sadri.universitypanel.domain.student.home.application.StudentHomeViewModel
+import com.sadri.universitypanel.infrastructure.ui.ProgressBar
 import com.sadri.universitypanel.infrastructure.ui.theme.UniversityPanelTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,21 +26,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
 
   private val splashViewModel: SplashViewModel by viewModels()
-  private val loginViewModel: LoginViewModel by viewModels()
-  private val studentHomeViewModel: StudentHomeViewModel by viewModels()
-  private val masterHomeViewModel: MasterHomeViewModel by viewModels()
 
   @ExperimentalMaterialApi
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
       UniversityPanelTheme {
-        Content(
-          splashViewModel = splashViewModel,
-          loginViewModel = loginViewModel,
-          studentHomeViewModel = studentHomeViewModel,
-          masterHomeViewModel = masterHomeViewModel
-        )
+        Content(splashViewModel = splashViewModel)
       }
     }
   }
@@ -54,11 +41,8 @@ class SplashActivity : ComponentActivity() {
 @ExperimentalMaterialApi
 @Composable
 fun Content(
-  splashViewModel: SplashViewModel,
-  loginViewModel: LoginViewModel,
-  studentHomeViewModel: StudentHomeViewModel,
-  masterHomeViewModel: MasterHomeViewModel,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  splashViewModel: SplashViewModel
 ) {
   val navController = rememberNavController().apply {
     enableOnBackPressed(false)
@@ -66,10 +50,7 @@ fun Content(
   Scaffold(
     content = {
       NavigationCoordinator(
-        loginViewModel = loginViewModel,
         navController = navController,
-        studentHomeViewModel = studentHomeViewModel,
-        masterHomeViewModel = masterHomeViewModel,
         splashViewModel = splashViewModel,
         modifier = modifier
       )
@@ -81,24 +62,31 @@ fun Content(
 @Composable
 fun NavigationCoordinator(
   navController: NavHostController,
-  loginViewModel: LoginViewModel,
-  studentHomeViewModel: StudentHomeViewModel,
-  masterHomeViewModel: MasterHomeViewModel,
   splashViewModel: SplashViewModel,
   modifier: Modifier
 ) {
   NavHost(navController, startDestination = Screens.Splash.route) {
     composable(Screens.StudentHome.route) {
-      StudentHomeScreen(studentHomeViewModel)
+      StudentHomeScreen(
+        modifier = modifier,
+        viewModel = hiltViewModel(it),
+        navController = navController
+      )
     }
     composable(Screens.MasterHome.route) {
-      MasterHomeScreen(masterHomeViewModel)
+      MasterHomeScreen(
+        modifier = modifier,
+        viewModel = hiltViewModel(it)
+      )
     }
     composable(Screens.Login.route) {
-      LoginScreen(modifier, loginViewModel)
+      LoginScreen(
+        modifier = modifier,
+        viewModel = hiltViewModel(it)
+      )
     }
     composable(Screens.Splash.route) {
-      SplashScreen()
+      ProgressBar()
     }
   }
   splashViewModel.viewState.observeAsState().value?.getContentIfNotHandled()?.let {
@@ -109,16 +97,6 @@ fun NavigationCoordinator(
         SplashUserState.AUTHENTICATED_MASTER -> Screens.MasterHome
       }
     navController.navigate(screen.route)
-  }
-}
-
-@Composable
-fun SplashScreen() {
-  Box(
-    contentAlignment = Alignment.Center,
-    modifier = Modifier.fillMaxSize()
-  ) {
-    CircularProgressIndicator()
   }
 }
 
