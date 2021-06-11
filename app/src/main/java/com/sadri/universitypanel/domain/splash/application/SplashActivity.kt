@@ -76,7 +76,8 @@ fun NavigationCoordinator(
     composable(Screens.MasterHome.route) {
       MasterHomeScreen(
         modifier = modifier,
-        viewModel = hiltViewModel(it)
+        viewModel = hiltViewModel(it),
+        navController = navController
       )
     }
     composable(Screens.Login.route) {

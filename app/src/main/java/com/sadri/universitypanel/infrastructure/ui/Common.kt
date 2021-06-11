@@ -110,7 +110,7 @@ fun LogoutBottomSheetContent(
       text = " Logout from your account ? ",
       style = MaterialTheme.typography.h6
     )
-    Row {
+    Row(modifier.padding(12.dp)) {
       Card(
         onClick = {
           coroutineScope.launch {
@@ -120,11 +120,13 @@ fun LogoutBottomSheetContent(
         },
         backgroundColor = Color.White,
         shape = RoundedCornerShape(15.dp),
-        modifier = modifier.padding(8.dp),
+        modifier = modifier
+          .padding(end = 20.dp),
         content = {
           Text(
             text = "Accept",
             color = MaterialTheme.colors.primary,
+            style = MaterialTheme.typography.h6,
             modifier = modifier.padding(8.dp)
           )
         }
@@ -137,11 +139,13 @@ fun LogoutBottomSheetContent(
         },
         backgroundColor = Color.White,
         shape = RoundedCornerShape(15.dp),
-        modifier = modifier.padding(8.dp),
+        modifier = modifier
+          .padding(start = 20.dp),
         content = {
           Text(
             text = "Deny",
             color = MaterialTheme.colors.primary,
+            style = MaterialTheme.typography.h6,
             modifier = modifier.padding(8.dp)
           )
         }

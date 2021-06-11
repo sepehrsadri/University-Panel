@@ -14,7 +14,6 @@ import com.sadri.universitypanel.infrastructure.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +30,6 @@ class StudentHomeViewModel @Inject constructor(
   val error: LiveData<Event<ToastViewState>> get() = _error
 
   init {
-    Timber.d("WTF : init ")
     viewModelScope.launch {
       readAuthenticatedStudentInfoDatabase.handle().collect { authenticationResponse ->
         _viewState.value = _viewState.value!!.copy(
@@ -40,9 +38,7 @@ class StudentHomeViewModel @Inject constructor(
       }
     }
     viewModelScope.launch {
-      Timber.d("WTF : retrieveCourses ")
       val coursesResponse = getStudentCourses.retrieveCourses()
-      Timber.d("WTF : coursesResponse $coursesResponse ")
       if (
         coursesResponse is ApiResult.Success &&
         coursesResponse.data.isNullOrEmpty().not()
