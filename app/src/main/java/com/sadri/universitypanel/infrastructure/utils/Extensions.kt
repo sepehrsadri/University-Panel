@@ -39,3 +39,10 @@ fun String?.getUserRule(): UserRule {
 fun ApiResult<*>.isError(): Boolean {
   return this is ApiResult.Error
 }
+
+fun Boolean?.isFalseOrNull(): Boolean {
+  return when {
+    this == null -> true
+    else -> !this
+  }
+}

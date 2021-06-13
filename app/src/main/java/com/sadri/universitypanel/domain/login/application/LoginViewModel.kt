@@ -12,7 +12,6 @@ import com.sadri.universitypanel.infrastructure.utils.ApiResult
 import com.sadri.universitypanel.infrastructure.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,9 +19,9 @@ class LoginViewModel @Inject constructor(
   private val onUserAuthenticate: OnUserAuthenticate
 ) : ViewModel() {
 
-  val number: MutableLiveData<String> = MutableLiveData("12345")
+  val number: MutableLiveData<String> = MutableLiveData("10101")
   val password: MutableLiveData<String> = MutableLiveData("admin")
-  val rule: MutableLiveData<UserRule> = MutableLiveData(UserRule.STUDENT)
+  val rule: MutableLiveData<UserRule> = MutableLiveData(UserRule.INSTRUCTOR)
 
   private val _error: MutableLiveData<Event<ToastViewState>> = MutableLiveData()
   val error: LiveData<Event<ToastViewState>> get() = _error

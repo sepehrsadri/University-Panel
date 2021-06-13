@@ -13,7 +13,7 @@ interface AuthenticationDataSource {
   ): Response<AuthenticationResponse>
 
   @POST("auth/instructor")
-  suspend fun authenticateMaster(
+  suspend fun authenticateInstructor(
     @Body authenticationRequest: AuthenticateRequest
   ): Response<AuthenticationResponse>
 }

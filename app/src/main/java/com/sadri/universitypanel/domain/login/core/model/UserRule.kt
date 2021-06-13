@@ -1,12 +1,12 @@
 package com.sadri.universitypanel.domain.login.core.model
 
 enum class UserRule {
-  STUDENT, MASTER;
+  STUDENT, INSTRUCTOR;
 
   fun getKey(): String {
     return when (this) {
       STUDENT -> "student"
-      MASTER -> "master"
+      INSTRUCTOR -> "instructor"
     }
   }
 
@@ -14,7 +14,7 @@ enum class UserRule {
     fun getRule(value: String?): UserRule {
       return when (value) {
         "student" -> STUDENT
-        "master" -> MASTER
+        "instructor" -> INSTRUCTOR
         else -> throw RuntimeException("unspecified rule")
       }
     }

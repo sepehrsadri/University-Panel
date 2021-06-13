@@ -1,12 +1,11 @@
 package com.sadri.universitypanel.infrastructure.di
 
+import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSource
 import com.sadri.universitypanel.domain.login.core.ports.outgoing.SendAuthenticateUserRequest
 import com.sadri.universitypanel.domain.login.infrastructure.AuthenticationDataSource
 import com.sadri.universitypanel.domain.login.infrastructure.AuthenticationDataSourceImpl
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthProvider
-import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.GetCoursesRequest
 import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSource
-import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSourceImpl
 import com.sadri.universitypanel.infrastructure.utils.AuthHeaderTokenInterceptor
 import dagger.Module
 import dagger.Provides
@@ -78,8 +77,8 @@ object NetworkModule {
 
   @Provides
   @Singleton
-  fun provideGetCoursesRequest(studentDataSource: StudentDataSource): GetCoursesRequest {
-    return StudentDataSourceImpl(studentDataSource)
+  fun provideInstructorDataSource(@Named("withToken") retrofit: Retrofit): InstructorDataSource {
+    return provideService(retrofit, InstructorDataSource::class.java)
   }
 
   private val okHttpClientBuilder by lazy {

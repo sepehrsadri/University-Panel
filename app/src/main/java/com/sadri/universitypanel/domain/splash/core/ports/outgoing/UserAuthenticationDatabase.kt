@@ -4,5 +4,5 @@ import com.sadri.universitypanel.domain.splash.core.model.UserAuthenticationStat
 import kotlinx.coroutines.flow.Flow
 
 interface UserAuthenticationDatabase {
-   suspend fun getState(): Flow<UserAuthenticationState>
+  suspend fun retrieveState(): Flow<UserAuthenticationState>
 }

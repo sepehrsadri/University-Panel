@@ -1,6 +1,11 @@
 package com.sadri.universitypanel.infrastructure.di
 
 import android.content.Context
+import com.sadri.universitypanel.domain.instructor.home.core.InstructorFacade
+import com.sadri.universitypanel.domain.instructor.home.core.ports.incoming.RetrieveInstructorSections
+import com.sadri.universitypanel.domain.instructor.home.core.ports.outgoing.RequestInstructorSections
+import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSource
+import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSourceImpl
 import com.sadri.universitypanel.domain.login.core.LoginFacade
 import com.sadri.universitypanel.domain.login.core.ports.incoming.OnUserAuthenticate
 import com.sadri.universitypanel.domain.login.core.ports.outgoing.SaveUserAuthenticationDatabase
@@ -14,11 +19,13 @@ import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthProvi
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthenticationDatabase
 import com.sadri.universitypanel.domain.splash.infrastructure.AuthenticatedStudentAuthenticationDatabaseAdapter
 import com.sadri.universitypanel.domain.splash.infrastructure.UserAuthProviderImpl
-import com.sadri.universitypanel.domain.student.home.core.StudentHomeFacade
-import com.sadri.universitypanel.domain.student.home.core.ports.incoming.GetAuthenticatedStudentInfo
-import com.sadri.universitypanel.domain.student.home.core.ports.incoming.GetStudentCourses
-import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.GetCoursesRequest
+import com.sadri.universitypanel.domain.student.home.core.StudentFacade
+import com.sadri.universitypanel.domain.student.home.core.ports.incoming.RetrieveAuthenticatedStudentInfo
+import com.sadri.universitypanel.domain.student.home.core.ports.incoming.RetrieveStudentCourses
 import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.ReadAuthenticatedStudentInfoDatabase
+import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.RequestStudentCourses
+import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSource
+import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -105,19 +112,41 @@ object AppModule {
 
   @Provides
   @Singleton
-  fun provideGetAuthenticatedUserInfo(
-    readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
-    getCoursesRequest: GetCoursesRequest
-  ): GetAuthenticatedStudentInfo {
-    return StudentHomeFacade(readAuthenticatedStudentInfoDatabase, getCoursesRequest)
+  fun provideRetrieveInstructorSections(
+    requestInstructorSections: RequestInstructorSections
+  ): RetrieveInstructorSections {
+    return InstructorFacade(
+      requestInstructorSections = requestInstructorSections
+    )
   }
 
   @Provides
   @Singleton
-  fun provideGetStudentCourses(
+  fun provideRetrieveAuthenticatedStudentInfo(
     readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
-    getCoursesRequest: GetCoursesRequest
-  ): GetStudentCourses {
-    return StudentHomeFacade(readAuthenticatedStudentInfoDatabase, getCoursesRequest)
+    requestStudentCourses: RequestStudentCourses
+  ): RetrieveAuthenticatedStudentInfo {
+    return StudentFacade(readAuthenticatedStudentInfoDatabase, requestStudentCourses)
+  }
+
+  @Provides
+  @Singleton
+  fun provideRetrieveStudentCourses(
+    readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
+    requestStudentCourses: RequestStudentCourses
+  ): RetrieveStudentCourses {
+    return StudentFacade(readAuthenticatedStudentInfoDatabase, requestStudentCourses)
+  }
+
+  @Provides
+  @Singleton
+  fun provideRequestStudentCourses(studentDataSource: StudentDataSource): RequestStudentCourses {
+    return StudentDataSourceImpl(studentDataSource)
+  }
+
+  @Provides
+  @Singleton
+  fun provideRequestInstructorSections(instructorDataSource: InstructorDataSource): RequestInstructorSections {
+    return InstructorDataSourceImpl(instructorDataSource)
   }
 }

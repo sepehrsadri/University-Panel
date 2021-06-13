@@ -1,16 +1,16 @@
-package com.sadri.universitypanel.domain.student.home.core.model
+package com.sadri.universitypanel.domain.instructor.home.core.model
 
 import com.google.gson.annotations.SerializedName
 
-data class CourseResponse(
+data class InstructorSectionResponse(
   @SerializedName("id")
-  val id: String,
+  val id: Int,
   @SerializedName("title")
   val title: String,
   @SerializedName("semester")
   val semester: String,
-  @SerializedName("grade")
-  val grade: String,
   @SerializedName("credits")
-  val credits: Int
+  val credits: Int,
+  @SerializedName("students")
+  val students: Int
 )

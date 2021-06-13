@@ -9,6 +9,6 @@ class SplashFacade(
   private val userAuthenticationDatabase: UserAuthenticationDatabase
 ) : GetUserAuthenticationState {
   override suspend fun handle(): Flow<UserAuthenticationState> {
-    return userAuthenticationDatabase.getState()
+    return userAuthenticationDatabase.retrieveState()
   }
 }

@@ -21,7 +21,7 @@ class AuthenticatedStudentAuthenticationDatabaseAdapter(
 ) : UserAuthenticationDatabase, SaveUserAuthenticationDatabase,
   ReadAuthenticatedStudentInfoDatabase, ClearUserInfoDatabase {
 
-  override suspend fun getState(): Flow<UserAuthenticationState> {
+  override suspend fun retrieveState(): Flow<UserAuthenticationState> {
     return context.dataStore.data.map { preferences ->
       val existToken = preferences[PreferencesKeys.USER_TOKEN]
       when {
@@ -30,7 +30,7 @@ class AuthenticatedStudentAuthenticationDatabaseAdapter(
           val userRule = preferences[PreferencesKeys.USER_RULE].getUserRule()
           if (userRule == UserRule.STUDENT)
             UserAuthenticationState.AUTHENTICATED_STUDENT else
-            UserAuthenticationState.AUTHENTICATED_MASTER
+            UserAuthenticationState.AUTHENTICATED_INSTRUCTOR
         }
       }
     }

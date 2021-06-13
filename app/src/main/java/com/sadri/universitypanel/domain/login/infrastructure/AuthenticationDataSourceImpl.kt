@@ -16,7 +16,7 @@ class AuthenticationDataSourceImpl(
   ): ApiResult<AuthenticationResponse> = getResult {
     when (userRule) {
       UserRule.STUDENT -> authenticationDataSource.authenticateStudent(authenticateRequest)
-      UserRule.MASTER -> authenticationDataSource.authenticateMaster(authenticateRequest)
+      UserRule.INSTRUCTOR -> authenticationDataSource.authenticateInstructor(authenticateRequest)
     }
   }
 }

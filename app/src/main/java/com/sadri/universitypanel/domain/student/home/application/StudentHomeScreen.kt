@@ -1,8 +1,5 @@
 package com.sadri.universitypanel.domain.student.home.application
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -19,25 +16,21 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.splash.application.Screens
-import com.sadri.universitypanel.domain.student.home.core.model.CourseResponse
+import com.sadri.universitypanel.domain.student.home.core.model.StudentCourseResponse
 import com.sadri.universitypanel.infrastructure.ui.LogoutBottomSheetContent
 import com.sadri.universitypanel.infrastructure.ui.ProfileTopAppBar
 import com.sadri.universitypanel.infrastructure.ui.ProgressBar
 import com.sadri.universitypanel.infrastructure.ui.SnackBar
 import com.sadri.universitypanel.infrastructure.ui.theme.Shapes
+import com.sadri.universitypanel.infrastructure.utils.isFalseOrNull
 
 @ExperimentalMaterialApi
 @Composable
@@ -47,6 +40,7 @@ fun StudentHomeScreen(
   navController: NavController
 ) {
   val viewState = viewModel.viewState.observeAsState().value!!
+  val isLoading = viewModel.loading.observeAsState().value
 
   viewModel.error.observeAsState().value?.getContentIfNotHandled()?.let {
     if (it is ToastViewState.Show) {
@@ -54,7 +48,7 @@ fun StudentHomeScreen(
     }
   }
 
-  if (viewState.isLoading) {
+  if (isLoading.isFalseOrNull().not()) {
     ProgressBar()
   }
 
@@ -97,13 +91,16 @@ fun StudentHomeScreen(
 
 @Composable
 fun CoursesList(
-  courses: List<CourseResponse>,
+  courses: List<StudentCourseResponse>,
   state: LazyListState,
   modifier: Modifier = Modifier
 ) {
   LazyColumn(modifier = modifier, state = state) {
     items(courses.size) { index ->
-      ListItem(course = courses[index])
+      ListItem(
+        studentCourse = courses[index],
+        modifier = modifier
+      )
       Divider()
     }
   }
@@ -111,23 +108,17 @@ fun CoursesList(
 
 @Composable
 fun ListItem(
-  course: CourseResponse,
+  studentCourse: StudentCourseResponse,
   modifier: Modifier = Modifier
 ) {
-  var isSelected by rememberSaveable { mutableStateOf(false) }
-  val backgroundColor by animateColorAsState(if (isSelected) MaterialTheme.colors.primary else Color.Transparent)
-
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
       .padding(16.dp)
-      .background(backgroundColor)
-      .clickable(onClick = { isSelected = !isSelected })
   ) {
-
     Spacer(Modifier.width(10.dp))
     Text(
-      text = course.title
+      text = studentCourse.title
     )
   }
 }

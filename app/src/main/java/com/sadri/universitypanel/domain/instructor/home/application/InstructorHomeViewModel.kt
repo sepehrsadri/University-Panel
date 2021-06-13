@@ -1,13 +1,13 @@
-package com.sadri.universitypanel.domain.student.home.application
+package com.sadri.universitypanel.domain.instructor.home.application
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sadri.universitypanel.domain.instructor.home.core.model.InstructorHomeViewState
+import com.sadri.universitypanel.domain.instructor.home.core.ports.incoming.RetrieveInstructorSections
 import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.RequestLogout
-import com.sadri.universitypanel.domain.student.home.core.model.StudentHomeViewState
-import com.sadri.universitypanel.domain.student.home.core.ports.incoming.RetrieveStudentCourses
 import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.ReadAuthenticatedStudentInfoDatabase
 import com.sadri.universitypanel.infrastructure.utils.ApiResult
 import com.sadri.universitypanel.infrastructure.utils.Event
@@ -18,14 +18,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StudentHomeViewModel @Inject constructor(
+class InstructorHomeViewModel @Inject constructor(
   private val readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
-  private val retrieveStudentCourses: RetrieveStudentCourses,
+  private val retrieveInstructorSections: RetrieveInstructorSections,
   private val requestLogout: RequestLogout
 ) : ViewModel() {
-  private val _viewState: MutableLiveData<StudentHomeViewState> =
-    MutableLiveData(StudentHomeViewState())
-  val viewState: LiveData<StudentHomeViewState> get() = _viewState
+  private val _viewState: MutableLiveData<InstructorHomeViewState> =
+    MutableLiveData(InstructorHomeViewState())
+  val viewState: LiveData<InstructorHomeViewState> get() = _viewState
 
   private val _error: MutableLiveData<Event<ToastViewState>> = MutableLiveData()
   val error: LiveData<Event<ToastViewState>> get() = _error
@@ -37,7 +37,7 @@ class StudentHomeViewModel @Inject constructor(
     _loading.addBooleanSource(
       viewState
     ) {
-      return@addBooleanSource it!!.name.isNotEmpty() && it.courses.isNotEmpty()
+      return@addBooleanSource it!!.name.isNotEmpty() && it.sections.isNotEmpty()
     }
 
     viewModelScope.launch {
@@ -48,22 +48,21 @@ class StudentHomeViewModel @Inject constructor(
       }
     }
     viewModelScope.launch {
-      val coursesResponse = retrieveStudentCourses.retrieveCourses()
+      val sectionsResponse = retrieveInstructorSections.retrieveSections()
       if (
-        coursesResponse is ApiResult.Success &&
-        coursesResponse.data.isNullOrEmpty().not()
+        sectionsResponse is ApiResult.Success &&
+        sectionsResponse.data.isNullOrEmpty().not()
       ) {
         _viewState.value = _viewState.value!!.copy(
-          courses = coursesResponse.data!!
+          sections = sectionsResponse.data!!
         )
       } else if (
-        coursesResponse is ApiResult.Error
+        sectionsResponse is ApiResult.Error
       ) {
-        _error.value = Event(ToastViewState.Show(coursesResponse.getFormattedText()))
+        _error.value = Event(ToastViewState.Show(sectionsResponse.getFormattedText()))
       }
     }
   }
-
 
   fun dismissToast() {
     _error.value = Event(ToastViewState.Hide)

@@ -35,7 +35,7 @@ import com.sadri.universitypanel.infrastructure.ui.SnackBar
 
 val ruleChipsList = listOf(
   UserRuleChipState.Student,
-  UserRuleChipState.Master
+  UserRuleChipState.Instructor
 )
 
 @ExperimentalMaterialApi
@@ -48,11 +48,11 @@ fun LoginScreen(
   val password = viewModel.password.observeAsState().value!!
   val rule = viewModel.rule.observeAsState().value!!
 
-    viewModel.error.observeAsState().value?.getContentIfNotHandled()?.let {
-      if (it is ToastViewState.Show) {
-        SnackBar(modifier = modifier, text = it.text, dismiss = { viewModel.dismissToast() })
-      }
+  viewModel.error.observeAsState().value?.getContentIfNotHandled()?.let {
+    if (it is ToastViewState.Show) {
+      SnackBar(modifier = modifier, text = it.text, dismiss = { viewModel.dismissToast() })
     }
+  }
 
   Column(
     modifier = modifier

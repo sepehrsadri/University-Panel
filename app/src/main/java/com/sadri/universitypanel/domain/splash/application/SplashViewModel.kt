@@ -34,8 +34,8 @@ class SplashViewModel @Inject constructor(
           UserAuthenticationState.AUTHENTICATED_STUDENT -> {
             _viewState.value = Event(SplashViewState(SplashUserState.AUTHENTICATED_STUDENT))
           }
-          UserAuthenticationState.AUTHENTICATED_MASTER -> {
-            _viewState.value = Event(SplashViewState(SplashUserState.AUTHENTICATED_MASTER))
+          UserAuthenticationState.AUTHENTICATED_INSTRUCTOR -> {
+            _viewState.value = Event(SplashViewState(SplashUserState.AUTHENTICATED_INSTRUCTOR))
           }
         }
       }
