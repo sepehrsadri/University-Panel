@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -62,7 +63,7 @@ fun ProgressBar() {
 
 @ExperimentalMaterialApi
 @Composable
-fun ProfileTopAppBar(
+fun ProfileTopAppBarWithBottomSheet(
   username: String,
   coroutineScope: CoroutineScope,
   bottomSheetScaffoldState: BottomSheetScaffoldState
@@ -86,6 +87,29 @@ fun ProfileTopAppBar(
         }
       }) {
         Icon(Icons.Filled.Home, "")
+      }
+    }
+  )
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun ProfileTopAppBar(
+  text: String,
+  onBackClicked: () -> Unit
+) {
+  TopAppBar(
+    title = {
+      Text(text = text)
+    },
+    backgroundColor = MaterialTheme.colors.primary,
+    contentColor = Color.White,
+    elevation = 12.dp,
+    actions = {
+      IconButton(onClick = {
+        onBackClicked()
+      }) {
+        Icon(Icons.Filled.ArrowBack, "")
       }
     }
   )

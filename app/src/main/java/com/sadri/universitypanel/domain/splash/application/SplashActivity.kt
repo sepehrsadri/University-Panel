@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -11,10 +12,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import com.sadri.universitypanel.domain.instructor.home.application.InstructorHomeScreen
+import com.sadri.universitypanel.domain.instructor.section.application.InstructorSectionScreen
 import com.sadri.universitypanel.domain.login.application.LoginScreen
 import com.sadri.universitypanel.domain.splash.core.model.SplashUserState
 import com.sadri.universitypanel.domain.student.home.application.StudentHomeScreen
@@ -48,11 +52,11 @@ fun Content(
     enableOnBackPressed(false)
   }
   Scaffold(
-    content = {
+    content = { innerPadding ->
       NavigationCoordinator(
         navController = navController,
         splashViewModel = splashViewModel,
-        modifier = modifier
+        modifier = Modifier.padding(innerPadding)
       )
     }
   )
@@ -69,21 +73,33 @@ fun NavigationCoordinator(
     composable(Screens.StudentHome.route) {
       StudentHomeScreen(
         modifier = modifier,
-        viewModel = hiltViewModel(it),
+        viewModel = hiltViewModel(),
         navController = navController
       )
     }
     composable(Screens.InstructorHome.route) {
       InstructorHomeScreen(
         modifier = modifier,
-        viewModel = hiltViewModel(it),
+        viewModel = hiltViewModel(),
+        navController = navController
+      )
+    }
+    composable(
+      route = Screens.InstructorSection.route.plus("/{$INSTRUCTOR_SECTION_SCREEN_ARGUMENT_ID_KEY}"),
+      arguments = listOf(navArgument(INSTRUCTOR_SECTION_SCREEN_ARGUMENT_ID_KEY) {
+        type = NavType.IntType
+      })
+    ) {
+      InstructorSectionScreen(
+        modifier = modifier,
+        viewModel = hiltViewModel(),
         navController = navController
       )
     }
     composable(Screens.Login.route) {
       LoginScreen(
         modifier = modifier,
-        viewModel = hiltViewModel(it)
+        viewModel = hiltViewModel()
       )
     }
     composable(Screens.Splash.route) {
@@ -109,6 +125,9 @@ private fun currentRoute(navController: NavHostController): String? {
 sealed class Screens(val route: String) {
   object StudentHome : Screens("StudentHome")
   object InstructorHome : Screens("InstructorHome")
+  object InstructorSection : Screens("InstructorSection")
   object Login : Screens("Login")
   object Splash : Screens("Splash")
 }
+
+const val INSTRUCTOR_SECTION_SCREEN_ARGUMENT_ID_KEY = "section_id"

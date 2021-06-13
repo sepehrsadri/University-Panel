@@ -3,7 +3,9 @@ package com.sadri.universitypanel.infrastructure.di
 import android.content.Context
 import com.sadri.universitypanel.domain.instructor.home.core.InstructorFacade
 import com.sadri.universitypanel.domain.instructor.home.core.ports.incoming.RetrieveInstructorSections
+import com.sadri.universitypanel.domain.instructor.home.core.ports.incoming.RetrieveSectionStudents
 import com.sadri.universitypanel.domain.instructor.home.core.ports.outgoing.RequestInstructorSections
+import com.sadri.universitypanel.domain.instructor.home.core.ports.outgoing.RequestSectionStudents
 import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSource
 import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSourceImpl
 import com.sadri.universitypanel.domain.login.core.LoginFacade
@@ -113,10 +115,24 @@ object AppModule {
   @Provides
   @Singleton
   fun provideRetrieveInstructorSections(
-    requestInstructorSections: RequestInstructorSections
+    requestInstructorSections: RequestInstructorSections,
+    requestSectionStudents: RequestSectionStudents
   ): RetrieveInstructorSections {
     return InstructorFacade(
-      requestInstructorSections = requestInstructorSections
+      requestInstructorSections = requestInstructorSections,
+      requestSectionStudents = requestSectionStudents
+    )
+  }
+
+  @Provides
+  @Singleton
+  fun provideRetrieveSectionStudents(
+    requestInstructorSections: RequestInstructorSections,
+    requestSectionStudents: RequestSectionStudents
+  ): RetrieveSectionStudents {
+    return InstructorFacade(
+      requestInstructorSections = requestInstructorSections,
+      requestSectionStudents = requestSectionStudents
     )
   }
 
@@ -147,6 +163,12 @@ object AppModule {
   @Provides
   @Singleton
   fun provideRequestInstructorSections(instructorDataSource: InstructorDataSource): RequestInstructorSections {
+    return InstructorDataSourceImpl(instructorDataSource)
+  }
+
+  @Provides
+  @Singleton
+  fun provideRequestSectionStudents(instructorDataSource: InstructorDataSource): RequestSectionStudents {
     return InstructorDataSourceImpl(instructorDataSource)
   }
 }

@@ -26,7 +26,7 @@ import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.splash.application.Screens
 import com.sadri.universitypanel.domain.student.home.core.model.StudentCourseResponse
 import com.sadri.universitypanel.infrastructure.ui.LogoutBottomSheetContent
-import com.sadri.universitypanel.infrastructure.ui.ProfileTopAppBar
+import com.sadri.universitypanel.infrastructure.ui.ProfileTopAppBarWithBottomSheet
 import com.sadri.universitypanel.infrastructure.ui.ProgressBar
 import com.sadri.universitypanel.infrastructure.ui.SnackBar
 import com.sadri.universitypanel.infrastructure.ui.theme.Shapes
@@ -77,7 +77,7 @@ fun StudentHomeScreen(
     },
     sheetPeekHeight = 0.dp,
     topBar = {
-      ProfileTopAppBar(
+      ProfileTopAppBarWithBottomSheet(
         username = viewState.name,
         coroutineScope = coroutineScope,
         bottomSheetScaffoldState = bottomSheetScaffoldState

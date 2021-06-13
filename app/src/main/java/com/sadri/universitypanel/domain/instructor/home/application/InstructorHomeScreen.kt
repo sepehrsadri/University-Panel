@@ -1,7 +1,9 @@
 package com.sadri.universitypanel.domain.instructor.home.application
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +28,7 @@ import com.sadri.universitypanel.domain.instructor.home.core.model.InstructorSec
 import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.splash.application.Screens
 import com.sadri.universitypanel.infrastructure.ui.LogoutBottomSheetContent
-import com.sadri.universitypanel.infrastructure.ui.ProfileTopAppBar
+import com.sadri.universitypanel.infrastructure.ui.ProfileTopAppBarWithBottomSheet
 import com.sadri.universitypanel.infrastructure.ui.ProgressBar
 import com.sadri.universitypanel.infrastructure.ui.SnackBar
 import com.sadri.universitypanel.infrastructure.ui.theme.Shapes
@@ -77,14 +79,20 @@ fun InstructorHomeScreen(
     },
     sheetPeekHeight = 0.dp,
     topBar = {
-      ProfileTopAppBar(
+      ProfileTopAppBarWithBottomSheet(
         username = viewState.name,
         coroutineScope = coroutineScope,
         bottomSheetScaffoldState = bottomSheetScaffoldState
       )
     },
     content = {
-      SectionsList(sections = viewState.sections, state = scrollState)
+      SectionsList(
+        sections = viewState.sections,
+        state = scrollState,
+        onItemClick = { id ->
+          navController.navigate(Screens.InstructorSection.route.plus("/$id"))
+        }
+      )
     }
   )
 }
@@ -94,13 +102,15 @@ fun InstructorHomeScreen(
 fun SectionsList(
   sections: List<InstructorSectionResponse>,
   state: LazyListState,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  onItemClick: (Int) -> Unit
 ) {
   LazyColumn(modifier = modifier, state = state) {
     items(sections.size) { index ->
       ListItem(
         section = sections[index],
-        modifier = modifier
+        modifier = modifier,
+        onClick = onItemClick
       )
       Divider()
     }
@@ -110,12 +120,15 @@ fun SectionsList(
 @Composable
 fun ListItem(
   section: InstructorSectionResponse,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  onClick: (Int) -> Unit
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
       .padding(16.dp)
+      .fillMaxWidth()
+      .clickable { onClick(section.id) }
   ) {
     Spacer(Modifier.width(10.dp))
     Text(
