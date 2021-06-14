@@ -16,15 +16,17 @@ import com.sadri.universitypanel.domain.splash.core.SplashFacade
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.AuthStateChanged
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.GetUserAuthenticationState
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.RequestLogout
+import com.sadri.universitypanel.domain.splash.core.ports.incoming.RetrieveUserInfo
+import com.sadri.universitypanel.domain.splash.core.ports.incoming.RetrieveUserToken
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.ClearUserInfoDatabase
+import com.sadri.universitypanel.domain.splash.core.ports.outgoing.ReadUserInfoDatabase
+import com.sadri.universitypanel.domain.splash.core.ports.outgoing.ReadUserTokenDatabase
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthProvider
 import com.sadri.universitypanel.domain.splash.core.ports.outgoing.UserAuthenticationDatabase
-import com.sadri.universitypanel.domain.splash.infrastructure.AuthenticatedStudentAuthenticationDatabaseAdapter
 import com.sadri.universitypanel.domain.splash.infrastructure.UserAuthProviderImpl
+import com.sadri.universitypanel.domain.splash.infrastructure.UserDatabaseAdapter
 import com.sadri.universitypanel.domain.student.home.core.StudentFacade
-import com.sadri.universitypanel.domain.student.home.core.ports.incoming.RetrieveAuthenticatedStudentInfo
 import com.sadri.universitypanel.domain.student.home.core.ports.incoming.RetrieveStudentCourses
-import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.ReadAuthenticatedStudentInfoDatabase
 import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.RequestStudentCourses
 import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSource
 import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSourceImpl
@@ -40,44 +42,86 @@ import javax.inject.Singleton
 object AppModule {
   @Provides
   @Singleton
-  fun provideUserAuthenticationDatabase(userAuthenticationDatabase: UserAuthenticationDatabase): GetUserAuthenticationState {
-    return SplashFacade(userAuthenticationDatabase)
+  fun provideGetUserAuthenticationState(
+    userAuthenticationDatabase: UserAuthenticationDatabase,
+    readUserInfoDatabase: ReadUserInfoDatabase,
+    readUserTokenDatabase: ReadUserTokenDatabase
+  ): GetUserAuthenticationState {
+    return SplashFacade(
+      userAuthenticationDatabase = userAuthenticationDatabase,
+      readUserInfoDatabase = readUserInfoDatabase,
+      readUserTokenDatabase = readUserTokenDatabase
+    )
+  }
+
+  @Provides
+  @Singleton
+  fun provideRetrieveUserInfo(
+    userAuthenticationDatabase: UserAuthenticationDatabase,
+    readUserInfoDatabase: ReadUserInfoDatabase,
+    readUserTokenDatabase: ReadUserTokenDatabase
+  ): RetrieveUserInfo {
+    return SplashFacade(
+      userAuthenticationDatabase = userAuthenticationDatabase,
+      readUserInfoDatabase = readUserInfoDatabase,
+      readUserTokenDatabase = readUserTokenDatabase
+    )
+  }
+
+  @Provides
+  @Singleton
+  fun provideRetrieveUserToken(
+    userAuthenticationDatabase: UserAuthenticationDatabase,
+    readUserInfoDatabase: ReadUserInfoDatabase,
+    readUserTokenDatabase: ReadUserTokenDatabase
+  ): RetrieveUserToken {
+    return SplashFacade(
+      userAuthenticationDatabase = userAuthenticationDatabase,
+      readUserInfoDatabase = readUserInfoDatabase,
+      readUserTokenDatabase = readUserTokenDatabase
+    )
   }
 
   @Provides
   @Singleton
   fun provideUserAuthenticationDatabaseAdapter(@ApplicationContext context: Context): UserAuthenticationDatabase {
-    return AuthenticatedStudentAuthenticationDatabaseAdapter(context)
+    return UserDatabaseAdapter(context)
   }
 
   @Provides
   @Singleton
   fun provideSaveUserAuthenticationDatabase(@ApplicationContext context: Context): SaveUserAuthenticationDatabase {
-    return AuthenticatedStudentAuthenticationDatabaseAdapter(context)
+    return UserDatabaseAdapter(context)
   }
 
   @Provides
   @Singleton
-  fun provideReadUserInfoDatabase(@ApplicationContext context: Context): ReadAuthenticatedStudentInfoDatabase {
-    return AuthenticatedStudentAuthenticationDatabaseAdapter(context)
+  fun provideReadUserInfoDatabase(@ApplicationContext context: Context): ReadUserInfoDatabase {
+    return UserDatabaseAdapter(context)
+  }
+
+  @Provides
+  @Singleton
+  fun provideReadUserTokenDatabase(@ApplicationContext context: Context): ReadUserTokenDatabase {
+    return UserDatabaseAdapter(context)
   }
 
   @Provides
   @Singleton
   fun provideClearUserInfoDatabase(@ApplicationContext context: Context): ClearUserInfoDatabase {
-    return AuthenticatedStudentAuthenticationDatabaseAdapter(context)
+    return UserDatabaseAdapter(context)
   }
 
   @Provides
   @Singleton
-  fun provideAuthStateChanged(readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase): AuthStateChanged {
-    return UserAuthProviderImpl(readAuthenticatedStudentInfoDatabase)
+  fun provideAuthStateChanged(retrieveUserToken: RetrieveUserToken): AuthStateChanged {
+    return UserAuthProviderImpl(retrieveUserToken)
   }
 
   @Provides
   @Singleton
-  fun provideUserAuthProvider(readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase): UserAuthProvider {
-    return UserAuthProviderImpl(readAuthenticatedStudentInfoDatabase)
+  fun provideUserAuthProvider(retrieveUserToken: RetrieveUserToken): UserAuthProvider {
+    return UserAuthProviderImpl(retrieveUserToken)
   }
 
   @Provides
@@ -138,20 +182,10 @@ object AppModule {
 
   @Provides
   @Singleton
-  fun provideRetrieveAuthenticatedStudentInfo(
-    readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
-    requestStudentCourses: RequestStudentCourses
-  ): RetrieveAuthenticatedStudentInfo {
-    return StudentFacade(readAuthenticatedStudentInfoDatabase, requestStudentCourses)
-  }
-
-  @Provides
-  @Singleton
   fun provideRetrieveStudentCourses(
-    readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
     requestStudentCourses: RequestStudentCourses
   ): RetrieveStudentCourses {
-    return StudentFacade(readAuthenticatedStudentInfoDatabase, requestStudentCourses)
+    return StudentFacade(requestStudentCourses)
   }
 
   @Provides

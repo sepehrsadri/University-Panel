@@ -21,7 +21,7 @@ import com.sadri.universitypanel.domain.instructor.home.application.InstructorHo
 import com.sadri.universitypanel.domain.instructor.section.application.InstructorSectionScreen
 import com.sadri.universitypanel.domain.login.application.LoginScreen
 import com.sadri.universitypanel.domain.splash.core.model.SplashUserState
-import com.sadri.universitypanel.domain.student.home.application.StudentHomeScreen
+import com.sadri.universitypanel.domain.student.home.application.StudentScreen
 import com.sadri.universitypanel.infrastructure.ui.ProgressBar
 import com.sadri.universitypanel.infrastructure.ui.theme.UniversityPanelTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,12 +69,15 @@ fun NavigationCoordinator(
   splashViewModel: SplashViewModel,
   modifier: Modifier
 ) {
-  NavHost(navController, startDestination = Screens.Splash.route) {
-    composable(Screens.StudentHome.route) {
-      StudentHomeScreen(
+  NavHost(
+    navController,
+    startDestination = Screens.Splash.route,
+    modifier = modifier
+  ) {
+    composable(Screens.Student.route) {
+      StudentScreen(
         modifier = modifier,
-        viewModel = hiltViewModel(),
-        navController = navController
+        mainNavController = navController
       )
     }
     composable(Screens.InstructorHome.route) {
@@ -103,27 +106,22 @@ fun NavigationCoordinator(
       )
     }
     composable(Screens.Splash.route) {
-      ProgressBar()
+      ProgressBar(modifier)
     }
   }
   splashViewModel.viewState.observeAsState().value?.getContentIfNotHandled()?.let {
     val screen =
       when (it.userState) {
         SplashUserState.NOT_AUTHENTICATED -> Screens.Login
-        SplashUserState.AUTHENTICATED_STUDENT -> Screens.StudentHome
+        SplashUserState.AUTHENTICATED_STUDENT -> Screens.Student
         SplashUserState.AUTHENTICATED_INSTRUCTOR -> Screens.InstructorHome
       }
     navController.navigate(screen.route)
   }
 }
 
-@Composable
-private fun currentRoute(navController: NavHostController): String? {
-  return navController.currentBackStackEntry?.destination?.route
-}
-
 sealed class Screens(val route: String) {
-  object StudentHome : Screens("StudentHome")
+  object Student : Screens("Student")
   object InstructorHome : Screens("InstructorHome")
   object InstructorSection : Screens("InstructorSection")
   object Login : Screens("Login")

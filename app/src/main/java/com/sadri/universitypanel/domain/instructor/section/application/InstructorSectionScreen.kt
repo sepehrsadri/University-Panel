@@ -39,10 +39,6 @@ fun InstructorSectionScreen(
     }
   }
 
-  if (viewState.isLoading) {
-    ProgressBar()
-  }
-
   val scrollState = rememberLazyListState()
 
   Scaffold(
@@ -55,7 +51,14 @@ fun InstructorSectionScreen(
       )
     },
     content = {
-      StudentsList(students = viewState.students, state = scrollState)
+      if (viewState.isLoading) {
+        ProgressBar(modifier)
+      }
+      StudentsList(
+        modifier = modifier,
+        students = viewState.students,
+        state = scrollState
+      )
     }
   )
 }

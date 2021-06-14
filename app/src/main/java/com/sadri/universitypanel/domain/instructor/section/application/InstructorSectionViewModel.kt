@@ -13,7 +13,6 @@ import com.sadri.universitypanel.infrastructure.utils.ApiResult
 import com.sadri.universitypanel.infrastructure.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,7 +37,7 @@ class InstructorSectionViewModel @Inject constructor(
         sectionsResponse is ApiResult.Success &&
         sectionsResponse.data.isNullOrEmpty().not()
       ) {
-        _viewState.value = _viewState.value!!.copy(
+        _viewState.value = InstructorSectionViewState(
           students = sectionsResponse.data!!,
           isLoading = false
         )

@@ -8,7 +8,7 @@ import com.sadri.universitypanel.domain.instructor.home.core.model.InstructorHom
 import com.sadri.universitypanel.domain.instructor.home.core.ports.incoming.RetrieveInstructorSections
 import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.RequestLogout
-import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.ReadAuthenticatedStudentInfoDatabase
+import com.sadri.universitypanel.domain.splash.core.ports.incoming.RetrieveUserInfo
 import com.sadri.universitypanel.infrastructure.utils.ApiResult
 import com.sadri.universitypanel.infrastructure.utils.Event
 import com.sadri.universitypanel.infrastructure.utils.MultiSourceBooleanMediatorLiveData
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InstructorHomeViewModel @Inject constructor(
-  private val readAuthenticatedStudentInfoDatabase: ReadAuthenticatedStudentInfoDatabase,
+  private val retrieveUserInfo: RetrieveUserInfo,
   private val retrieveInstructorSections: RetrieveInstructorSections,
   private val requestLogout: RequestLogout
 ) : ViewModel() {
@@ -41,9 +41,9 @@ class InstructorHomeViewModel @Inject constructor(
     }
 
     viewModelScope.launch {
-      readAuthenticatedStudentInfoDatabase.handle().collect { authenticationResponse ->
+      retrieveUserInfo.retrieveUserInfo().collect { userInfo ->
         _viewState.value = _viewState.value!!.copy(
-          name = authenticationResponse.name
+          name = userInfo.name
         )
       }
     }

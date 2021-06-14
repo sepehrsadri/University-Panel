@@ -30,7 +30,8 @@ class LoginFacade(
     if (authenticationResponse is ApiResult.Success) {
       saveUserAuthenticationDatabase.handle(
         userRule = userRule,
-        authenticationResponse = authenticationResponse.data
+        authenticationResponse = authenticationResponse.data,
+        authenticateRequest.number
       )
       authStateChanged.handle(authenticationResponse.data?.token)
     }

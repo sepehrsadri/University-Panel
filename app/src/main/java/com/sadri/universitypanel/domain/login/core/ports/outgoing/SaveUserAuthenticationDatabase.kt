@@ -6,6 +6,7 @@ import com.sadri.universitypanel.domain.login.core.model.UserRule
 interface SaveUserAuthenticationDatabase {
   suspend fun handle(
     userRule: UserRule,
-    authenticationResponse: AuthenticationResponse?
+    authenticationResponse: AuthenticationResponse?,
+    number : String,
   )
 }

@@ -51,7 +51,7 @@ fun InstructorHomeScreen(
   }
 
   if (isLoading.isFalseOrNull().not()) {
-    ProgressBar()
+    ProgressBar(modifier)
   }
 
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -87,6 +87,7 @@ fun InstructorHomeScreen(
     },
     content = {
       SectionsList(
+        modifier = modifier,
         sections = viewState.sections,
         state = scrollState,
         onItemClick = { id ->

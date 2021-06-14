@@ -52,10 +52,10 @@ fun SnackBar(
 }
 
 @Composable
-fun ProgressBar() {
+fun ProgressBar(modifier: Modifier = Modifier) {
   Box(
     contentAlignment = Alignment.Center,
-    modifier = Modifier.fillMaxSize()
+    modifier = modifier.fillMaxSize()
   ) {
     CircularProgressIndicator()
   }

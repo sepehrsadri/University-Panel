@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">UniversityPanel</string>
+
+    <string name="student_home_title">Courses</string>
+    <string name="student_semester_title">Semester</string>
+    <string name="student_profile">Profile</string>
 </resources>
