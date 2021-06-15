@@ -1,6 +1,7 @@
 package com.sadri.universitypanel.domain.instructor.home.application
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,6 +63,7 @@ fun InstructorHomeScreen(
     sheetContent = {
       LogoutBottomSheetContent(
         modifier = modifier,
+        rootModifier = modifier.padding(16.dp),
         coroutineScope = coroutineScope,
         bottomSheetScaffoldState = bottomSheetScaffoldState
       ) {
@@ -72,7 +74,7 @@ fun InstructorHomeScreen(
     sheetPeekHeight = 0.dp,
     topBar = {
       ProfileTopAppBarWithBottomSheet(
-        username = viewState.name,
+        username = "Instructor : ${viewState.name}",
         coroutineScope = coroutineScope,
         bottomSheetScaffoldState = bottomSheetScaffoldState
       )
@@ -135,10 +137,25 @@ fun ListItem(
       .fillMaxWidth()
       .clickable { onClick(section.id) }
   ) {
-    Spacer(Modifier.width(10.dp))
-    Text(
-      text = section.title,
-      modifier = modifier.padding(8.dp)
-    )
+    Spacer(modifier.width(10.dp))
+    Column {
+      Text(
+        text = "Title : ${section.title}",
+        style = MaterialTheme.typography.h6
+      )
+
+      Text(
+        text = "Semester : ${section.semester}",
+        style = MaterialTheme.typography.subtitle2
+      )
+      Text(
+        text = "Credits : ${section.credits}",
+        style = MaterialTheme.typography.subtitle2
+      )
+      Text(
+        text = "Students Number : ${section.students}",
+        style = MaterialTheme.typography.subtitle2
+      )
+    }
   }
 }

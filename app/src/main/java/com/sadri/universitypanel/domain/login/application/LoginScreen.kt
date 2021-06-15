@@ -56,7 +56,7 @@ fun LoginScreen(
 
   Scaffold(
     scaffoldState = rememberScaffoldState(snackbarHostState = snackBarHostState),
-  ) { innerPadding ->
+  ) {
     if (messageState.isNotEmpty()) {
       coroutineScope.launch {
         snackBarHostState.showSnackbar(
@@ -67,7 +67,7 @@ fun LoginScreen(
       }
     }
     LoginContent(
-      modifier = Modifier.padding(innerPadding),
+      modifier = modifier,
       number = viewState.number,
       password = viewState.password,
       rule = viewState.rule,

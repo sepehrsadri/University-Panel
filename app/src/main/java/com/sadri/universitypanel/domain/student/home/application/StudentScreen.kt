@@ -1,8 +1,10 @@
 package com.sadri.universitypanel.domain.student.home.application
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +15,7 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
@@ -68,11 +71,11 @@ fun StudentScreen(
         items = bottomNavigationItems
       )
     }
-  ) { innerPadding ->
+  ) {
     StudentNavigationCoordinator(
       studentNavController = studentGraphNavController,
       mainNavController = mainNavController,
-      modifier = modifier.padding(innerPadding)
+      modifier = modifier
     )
   }
 
@@ -162,7 +165,7 @@ fun StudentHomeScreen(
 
   Scaffold(
     scaffoldState = rememberScaffoldState(snackbarHostState = snackBarHostState)
-  ) { innerPadding ->
+  ) {
     if (messageState.isNotEmpty()) {
       coroutineScope.launch {
         snackBarHostState.showSnackbar(
@@ -176,7 +179,7 @@ fun StudentHomeScreen(
       ProgressBar(modifier)
     }
     CoursesList(
-      modifier = modifier.padding(innerPadding),
+      modifier = modifier,
       courses = viewState.courses,
       state = scrollState
     )
@@ -209,11 +212,27 @@ fun ListItem(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
       .padding(16.dp)
+      .fillMaxWidth()
   ) {
-    Spacer(Modifier.width(10.dp))
-    Text(
-      text = studentCourse.title
-    )
+    Spacer(modifier.width(10.dp))
+    Column {
+      Text(
+        text = "Title : ${studentCourse.title}",
+        style = MaterialTheme.typography.h6
+      )
+      Text(
+        text = "Semester : ${studentCourse.semester}",
+        style = MaterialTheme.typography.subtitle2
+      )
+      Text(
+        text = "Grade : ${studentCourse.grade}",
+        style = MaterialTheme.typography.subtitle2
+      )
+      Text(
+        text = "Credits : ${studentCourse.credits}",
+        style = MaterialTheme.typography.subtitle2
+      )
+    }
   }
 }
 

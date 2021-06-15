@@ -53,6 +53,7 @@ fun StudentProfileScreen(
     sheetContent = {
       LogoutBottomSheetContent(
         modifier = modifier,
+        rootModifier = modifier.padding(bottom = 52.dp),
         coroutineScope = coroutineScope,
         bottomSheetScaffoldState = bottomSheetScaffoldState
       ) {
@@ -75,16 +76,16 @@ fun StudentProfileScreen(
         }
         Text(
           text = "Name : ${viewState.name}",
-          modifier = modifier.padding(4.dp),
+          modifier = modifier.padding(8.dp),
           style = MaterialTheme.typography.h6
         )
         Text(
           text = "Number : ${viewState.number}",
-          modifier = modifier.padding(4.dp),
+          modifier = modifier.padding(8.dp),
           style = MaterialTheme.typography.h6
         )
         Card(
-          modifier = modifier.padding(bottom = 32.dp),
+          modifier = modifier.padding(bottom = 32.dp, top = 8.dp),
           backgroundColor = MaterialTheme.colors.primary,
           elevation = 2.dp
         ) {

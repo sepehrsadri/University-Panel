@@ -56,7 +56,7 @@ fun Content(
       NavigationCoordinator(
         navController = navController,
         splashViewModel = splashViewModel,
-        modifier = Modifier.padding(innerPadding)
+        modifier = modifier.padding(innerPadding)
       )
     }
   )

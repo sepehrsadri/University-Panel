@@ -1,6 +1,8 @@
 package com.sadri.universitypanel.infrastructure.di
 
 import android.content.Context
+import com.sadri.universitypanel.domain.instructor.grade.core.ports.incoming.SubmitStudentsGrade
+import com.sadri.universitypanel.domain.instructor.grade.core.ports.outgoing.RequestSendStudentsGrade
 import com.sadri.universitypanel.domain.instructor.home.core.InstructorFacade
 import com.sadri.universitypanel.domain.instructor.home.core.ports.incoming.RetrieveInstructorSections
 import com.sadri.universitypanel.domain.instructor.home.core.ports.incoming.RetrieveSectionStudents
@@ -8,8 +10,6 @@ import com.sadri.universitypanel.domain.instructor.home.core.ports.outgoing.Requ
 import com.sadri.universitypanel.domain.instructor.home.core.ports.outgoing.RequestSectionStudents
 import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSource
 import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSourceImpl
-import com.sadri.universitypanel.domain.instructor.grade.core.ports.incoming.SubmitStudentsGrade
-import com.sadri.universitypanel.domain.instructor.grade.core.ports.outgoing.RequestSendStudentsGrade
 import com.sadri.universitypanel.domain.login.core.LoginFacade
 import com.sadri.universitypanel.domain.login.core.ports.incoming.OnUserAuthenticate
 import com.sadri.universitypanel.domain.login.core.ports.outgoing.SaveUserAuthenticationDatabase
@@ -32,6 +32,10 @@ import com.sadri.universitypanel.domain.student.home.core.ports.incoming.Retriev
 import com.sadri.universitypanel.domain.student.home.core.ports.outgoing.RequestStudentCourses
 import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSource
 import com.sadri.universitypanel.domain.student.home.infrastructure.StudentDataSourceImpl
+import com.sadri.universitypanel.domain.student.semester.core.ports.incoming.RetrieveStudentSemester
+import com.sadri.universitypanel.domain.student.semester.core.ports.incoming.SubmitStudentTakes
+import com.sadri.universitypanel.domain.student.semester.core.ports.outgoing.RequestSendStudentTakes
+import com.sadri.universitypanel.domain.student.semester.core.ports.outgoing.RequestStudentSemester
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -203,14 +207,49 @@ object AppModule {
   @Provides
   @Singleton
   fun provideRetrieveStudentCourses(
-    requestStudentCourses: RequestStudentCourses
+    requestStudentCourses: RequestStudentCourses,
+    requestStudentSemester: RequestStudentSemester,
+    requestSendStudentTakes: RequestSendStudentTakes
   ): RetrieveStudentCourses {
-    return StudentFacade(requestStudentCourses)
+    return StudentFacade(requestStudentCourses, requestStudentSemester, requestSendStudentTakes)
+  }
+
+  @Provides
+  @Singleton
+  fun provideRetrieveStudentSemester(
+    requestStudentCourses: RequestStudentCourses,
+    requestStudentSemester: RequestStudentSemester,
+    requestSendStudentTakes: RequestSendStudentTakes
+  ): RetrieveStudentSemester {
+    return StudentFacade(requestStudentCourses, requestStudentSemester, requestSendStudentTakes)
+  }
+
+
+  @Provides
+  @Singleton
+  fun provideSubmitStudentTakes(
+    requestStudentCourses: RequestStudentCourses,
+    requestStudentSemester: RequestStudentSemester,
+    requestSendStudentTakes: RequestSendStudentTakes
+  ): SubmitStudentTakes {
+    return StudentFacade(requestStudentCourses, requestStudentSemester, requestSendStudentTakes)
   }
 
   @Provides
   @Singleton
   fun provideRequestStudentCourses(studentDataSource: StudentDataSource): RequestStudentCourses {
+    return StudentDataSourceImpl(studentDataSource)
+  }
+
+  @Provides
+  @Singleton
+  fun provideRequestStudentSemester(studentDataSource: StudentDataSource): RequestStudentSemester {
+    return StudentDataSourceImpl(studentDataSource)
+  }
+
+  @Provides
+  @Singleton
+  fun provideRequestRequestSendStudentTakes(studentDataSource: StudentDataSource): RequestSendStudentTakes {
     return StudentDataSourceImpl(studentDataSource)
   }
 

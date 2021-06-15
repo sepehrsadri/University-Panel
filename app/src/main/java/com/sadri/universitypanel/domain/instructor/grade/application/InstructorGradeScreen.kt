@@ -68,7 +68,7 @@ fun InstructorGradeScreen(
     },
     topBar = {
       ProfileTopAppBar(
-        text = "Students",
+        text = "Students : ",
         onBackClicked = {
           navController.navigate(Screens.InstructorHome.route)
         }
@@ -129,10 +129,11 @@ fun ListItem(
     modifier = modifier
       .padding(16.dp)
   ) {
-    Spacer(Modifier.width(10.dp))
+    Spacer(modifier.width(10.dp))
     Text(
       text = student.name,
-      modifier = modifier.padding(8.dp)
+      modifier = modifier.padding(8.dp),
+      style = MaterialTheme.typography.h6
     )
     OutlinedTextField(
       value = student.grade,
@@ -140,7 +141,7 @@ fun ListItem(
       label = { Text(text = "Grade") },
       modifier = modifier
         .padding(8.dp)
-        .requiredWidth(71.dp)
+        .requiredWidth(71.dp),
     )
 
   }

@@ -97,13 +97,13 @@ fun ProfileTopAppBar(
 @Composable
 fun LogoutBottomSheetContent(
   modifier: Modifier,
+  rootModifier: Modifier,
   coroutineScope: CoroutineScope,
   bottomSheetScaffoldState: BottomSheetScaffoldState,
-  navigate: () -> Unit
+  navigate: () -> Unit,
 ) {
   Column(
-    modifier = modifier
-      .padding(16.dp)
+    modifier = rootModifier
       .fillMaxWidth(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
