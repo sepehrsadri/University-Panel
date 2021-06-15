@@ -6,12 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadri.universitypanel.domain.instructor.home.core.model.InstructorHomeViewState
 import com.sadri.universitypanel.domain.instructor.home.core.ports.incoming.RetrieveInstructorSections
-import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.RequestLogout
 import com.sadri.universitypanel.domain.splash.core.ports.incoming.RetrieveUserInfo
 import com.sadri.universitypanel.infrastructure.utils.ApiResult
-import com.sadri.universitypanel.infrastructure.utils.Event
-import com.sadri.universitypanel.infrastructure.utils.MultiSourceBooleanMediatorLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -27,19 +24,10 @@ class InstructorHomeViewModel @Inject constructor(
     MutableLiveData(InstructorHomeViewState())
   val viewState: LiveData<InstructorHomeViewState> get() = _viewState
 
-  private val _error: MutableLiveData<Event<ToastViewState>> = MutableLiveData()
-  val error: LiveData<Event<ToastViewState>> get() = _error
-
-  private val _loading = MultiSourceBooleanMediatorLiveData()
-  val loading: LiveData<Boolean> get() = _loading
+  private val _message: MutableLiveData<String> = MutableLiveData("")
+  val message: LiveData<String> get() = _message
 
   init {
-    _loading.addBooleanSource(
-      viewState
-    ) {
-      return@addBooleanSource it!!.name.isNotEmpty() && it.sections.isNotEmpty()
-    }
-
     viewModelScope.launch {
       retrieveUserInfo.retrieveUserInfo().collect { userInfo ->
         _viewState.value = _viewState.value!!.copy(
@@ -59,24 +47,19 @@ class InstructorHomeViewModel @Inject constructor(
       } else if (
         sectionsResponse is ApiResult.Error
       ) {
-        _error.value = Event(ToastViewState.Show(sectionsResponse.getFormattedText()))
+        _message.value = sectionsResponse.getFormattedText()
       }
     }
   }
 
-  fun dismissToast() {
-    _error.value = Event(ToastViewState.Hide)
+  fun dismissSnackBar() {
+    _message.value = ""
   }
 
   fun logout() {
     viewModelScope.launch {
       requestLogout.logout()
     }
-  }
-
-  override fun onCleared() {
-    _loading.removeSource(viewState)
-    super.onCleared()
   }
 
 }

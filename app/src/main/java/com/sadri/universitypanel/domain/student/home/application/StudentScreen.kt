@@ -14,14 +14,18 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -36,12 +40,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.sadri.universitypanel.R
-import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.student.home.core.model.StudentCourseResponse
 import com.sadri.universitypanel.domain.student.profile.application.StudentProfileScreen
 import com.sadri.universitypanel.domain.student.semester.application.StudentSemesterScreen
 import com.sadri.universitypanel.infrastructure.ui.ProgressBar
-import com.sadri.universitypanel.infrastructure.ui.SnackBar
+import kotlinx.coroutines.launch
 
 
 @ExperimentalMaterialApi
@@ -151,16 +154,24 @@ fun StudentHomeScreen(
   viewModel: StudentHomeViewModel
 ) {
   val viewState = viewModel.viewState.observeAsState().value!!
-
-  viewModel.error.observeAsState().value?.getContentIfNotHandled()?.let {
-    if (it is ToastViewState.Show) {
-      SnackBar(modifier = modifier, text = it.text, dismiss = { viewModel.dismissToast() })
-    }
-  }
+  val messageState = viewModel.message.observeAsState().value!!
 
   val scrollState = rememberLazyListState()
+  val snackBarHostState = remember { SnackbarHostState() }
+  val coroutineScope = rememberCoroutineScope()
 
-  Scaffold { innerPadding ->
+  Scaffold(
+    scaffoldState = rememberScaffoldState(snackbarHostState = snackBarHostState)
+  ) { innerPadding ->
+    if (messageState.isNotEmpty()) {
+      coroutineScope.launch {
+        snackBarHostState.showSnackbar(
+          message = messageState,
+          actionLabel = "Dismiss"
+        )
+        viewModel.dismissSnackBar()
+      }
+    }
     if (viewState.isLoading) {
       ProgressBar(modifier)
     }

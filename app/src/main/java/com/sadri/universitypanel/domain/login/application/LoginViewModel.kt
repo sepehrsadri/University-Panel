@@ -5,11 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadri.universitypanel.domain.login.core.model.AuthenticateRequest
-import com.sadri.universitypanel.domain.login.core.model.ToastViewState
+import com.sadri.universitypanel.domain.login.core.model.LoginViewState
 import com.sadri.universitypanel.domain.login.core.model.UserRule
 import com.sadri.universitypanel.domain.login.core.ports.incoming.OnUserAuthenticate
 import com.sadri.universitypanel.infrastructure.utils.ApiResult
-import com.sadri.universitypanel.infrastructure.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,42 +18,48 @@ class LoginViewModel @Inject constructor(
   private val onUserAuthenticate: OnUserAuthenticate
 ) : ViewModel() {
 
-  val number: MutableLiveData<String> = MutableLiveData("10101")
-  val password: MutableLiveData<String> = MutableLiveData("admin")
-  val rule: MutableLiveData<UserRule> = MutableLiveData(UserRule.INSTRUCTOR)
+  private val _viewState: MutableLiveData<LoginViewState> =
+    MutableLiveData(LoginViewState())
+  val viewState: LiveData<LoginViewState> get() = _viewState
 
-  private val _error: MutableLiveData<Event<ToastViewState>> = MutableLiveData()
-  val error: LiveData<Event<ToastViewState>> get() = _error
+  private val _message: MutableLiveData<String> = MutableLiveData("")
+  val message: LiveData<String> get() = _message
 
   fun submit() {
     viewModelScope.launch {
       val result = onUserAuthenticate.handle(
-        userRule = rule.value!!,
+        userRule = viewState.value!!.rule,
         authenticateRequest = AuthenticateRequest(
-          number = number.value!!,
-          password = password.value!!,
+          number = viewState.value!!.number,
+          password = viewState.value!!.password,
         )
       )
       if (result is ApiResult.Error) {
-        _error.value = Event(ToastViewState.Show(result.getFormattedText()))
+        _message.value = result.getFormattedText()
       }
     }
   }
 
-  fun dismissToast() {
-    _error.value = Event(ToastViewState.Hide)
+  fun dismissSnackBar() {
+    _message.value = ""
   }
 
   fun onNumberChanged(number: String) {
-    this.number.value = number
+    _viewState.value = _viewState.value!!.copy(
+      number = number
+    )
   }
 
   fun onRuleChanged(rule: UserRule) {
-    this.rule.value = rule
+    _viewState.value = _viewState.value!!.copy(
+      rule = rule
+    )
   }
 
   fun onPasswordChanged(password: String) {
-    this.password.value = password
+    _viewState.value = _viewState.value!!.copy(
+      password = password
+    )
   }
 
 }

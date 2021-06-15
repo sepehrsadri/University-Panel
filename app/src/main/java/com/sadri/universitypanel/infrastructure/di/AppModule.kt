@@ -8,6 +8,8 @@ import com.sadri.universitypanel.domain.instructor.home.core.ports.outgoing.Requ
 import com.sadri.universitypanel.domain.instructor.home.core.ports.outgoing.RequestSectionStudents
 import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSource
 import com.sadri.universitypanel.domain.instructor.home.infrastructure.InstructorDataSourceImpl
+import com.sadri.universitypanel.domain.instructor.grade.core.ports.incoming.SubmitStudentsGrade
+import com.sadri.universitypanel.domain.instructor.grade.core.ports.outgoing.RequestSendStudentsGrade
 import com.sadri.universitypanel.domain.login.core.LoginFacade
 import com.sadri.universitypanel.domain.login.core.ports.incoming.OnUserAuthenticate
 import com.sadri.universitypanel.domain.login.core.ports.outgoing.SaveUserAuthenticationDatabase
@@ -160,11 +162,27 @@ object AppModule {
   @Singleton
   fun provideRetrieveInstructorSections(
     requestInstructorSections: RequestInstructorSections,
-    requestSectionStudents: RequestSectionStudents
+    requestSectionStudents: RequestSectionStudents,
+    requestSendStudentsGrade: RequestSendStudentsGrade
   ): RetrieveInstructorSections {
     return InstructorFacade(
       requestInstructorSections = requestInstructorSections,
-      requestSectionStudents = requestSectionStudents
+      requestSectionStudents = requestSectionStudents,
+      requestSendStudentsGrade = requestSendStudentsGrade
+    )
+  }
+
+  @Provides
+  @Singleton
+  fun provideSubmitStudentsGrade(
+    requestInstructorSections: RequestInstructorSections,
+    requestSectionStudents: RequestSectionStudents,
+    requestSendStudentsGrade: RequestSendStudentsGrade
+  ): SubmitStudentsGrade {
+    return InstructorFacade(
+      requestInstructorSections = requestInstructorSections,
+      requestSectionStudents = requestSectionStudents,
+      requestSendStudentsGrade = requestSendStudentsGrade
     )
   }
 
@@ -172,11 +190,13 @@ object AppModule {
   @Singleton
   fun provideRetrieveSectionStudents(
     requestInstructorSections: RequestInstructorSections,
-    requestSectionStudents: RequestSectionStudents
+    requestSectionStudents: RequestSectionStudents,
+    requestSendStudentsGrade: RequestSendStudentsGrade
   ): RetrieveSectionStudents {
     return InstructorFacade(
       requestInstructorSections = requestInstructorSections,
-      requestSectionStudents = requestSectionStudents
+      requestSectionStudents = requestSectionStudents,
+      requestSendStudentsGrade = requestSendStudentsGrade
     )
   }
 
@@ -203,6 +223,12 @@ object AppModule {
   @Provides
   @Singleton
   fun provideRequestSectionStudents(instructorDataSource: InstructorDataSource): RequestSectionStudents {
+    return InstructorDataSourceImpl(instructorDataSource)
+  }
+
+  @Provides
+  @Singleton
+  fun provideRequestSendStudentsGrade(instructorDataSource: InstructorDataSource): RequestSendStudentsGrade {
     return InstructorDataSourceImpl(instructorDataSource)
   }
 }

@@ -17,8 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import com.sadri.universitypanel.domain.instructor.grade.application.InstructorGradeScreen
 import com.sadri.universitypanel.domain.instructor.home.application.InstructorHomeScreen
-import com.sadri.universitypanel.domain.instructor.section.application.InstructorSectionScreen
 import com.sadri.universitypanel.domain.login.application.LoginScreen
 import com.sadri.universitypanel.domain.splash.core.model.SplashUserState
 import com.sadri.universitypanel.domain.student.home.application.StudentScreen
@@ -88,12 +88,12 @@ fun NavigationCoordinator(
       )
     }
     composable(
-      route = Screens.InstructorSection.route.plus("/{$INSTRUCTOR_SECTION_SCREEN_ARGUMENT_ID_KEY}"),
-      arguments = listOf(navArgument(INSTRUCTOR_SECTION_SCREEN_ARGUMENT_ID_KEY) {
+      route = Screens.InstructorGrade.route.plus("/{$INSTRUCTOR_GRADE_SCREEN_ARGUMENT_ID_KEY}"),
+      arguments = listOf(navArgument(INSTRUCTOR_GRADE_SCREEN_ARGUMENT_ID_KEY) {
         type = NavType.IntType
       })
     ) {
-      InstructorSectionScreen(
+      InstructorGradeScreen(
         modifier = modifier,
         viewModel = hiltViewModel(),
         navController = navController
@@ -123,9 +123,9 @@ fun NavigationCoordinator(
 sealed class Screens(val route: String) {
   object Student : Screens("Student")
   object InstructorHome : Screens("InstructorHome")
-  object InstructorSection : Screens("InstructorSection")
+  object InstructorGrade : Screens("InstructorGrade")
   object Login : Screens("Login")
   object Splash : Screens("Splash")
 }
 
-const val INSTRUCTOR_SECTION_SCREEN_ARGUMENT_ID_KEY = "section_id"
+const val INSTRUCTOR_GRADE_SCREEN_ARGUMENT_ID_KEY = "section_id"

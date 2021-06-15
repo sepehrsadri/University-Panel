@@ -4,11 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sadri.universitypanel.domain.login.core.model.ToastViewState
 import com.sadri.universitypanel.domain.student.home.core.model.StudentHomeViewState
 import com.sadri.universitypanel.domain.student.home.core.ports.incoming.RetrieveStudentCourses
 import com.sadri.universitypanel.infrastructure.utils.ApiResult
-import com.sadri.universitypanel.infrastructure.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,8 +19,8 @@ class StudentHomeViewModel @Inject constructor(
     MutableLiveData(StudentHomeViewState())
   val viewState: LiveData<StudentHomeViewState> get() = _viewState
 
-  private val _error: MutableLiveData<Event<ToastViewState>> = MutableLiveData()
-  val error: LiveData<Event<ToastViewState>> get() = _error
+  private val _message: MutableLiveData<String> = MutableLiveData("")
+  val message: LiveData<String> get() = _message
 
   init {
     viewModelScope.launch {
@@ -31,21 +29,18 @@ class StudentHomeViewModel @Inject constructor(
         coursesResponse is ApiResult.Success &&
         coursesResponse.data.isNullOrEmpty().not()
       ) {
-        _viewState.value = StudentHomeViewState(
-          courses = coursesResponse.data!!,
-          isLoading = false
-        )
+        _viewState.value = StudentHomeViewState(courses = coursesResponse.data!!)
       } else if (
         coursesResponse is ApiResult.Error
       ) {
-        _error.value = Event(ToastViewState.Show(coursesResponse.getFormattedText()))
+        _message.value = coursesResponse.getFormattedText()
       }
     }
   }
 
 
-  fun dismissToast() {
-    _error.value = Event(ToastViewState.Hide)
+  fun dismissSnackBar() {
+    _message.value = ""
   }
 
 }

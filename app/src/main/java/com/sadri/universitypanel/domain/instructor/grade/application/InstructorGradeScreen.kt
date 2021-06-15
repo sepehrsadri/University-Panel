@@ -1,80 +1,77 @@
-package com.sadri.universitypanel.domain.instructor.home.application
+package com.sadri.universitypanel.domain.instructor.grade.application
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExtendedFloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
-import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MarkChatRead
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.sadri.universitypanel.domain.instructor.home.core.model.InstructorSectionResponse
+import com.sadri.universitypanel.domain.instructor.home.core.model.SectionStudentResponse
 import com.sadri.universitypanel.domain.splash.application.Screens
-import com.sadri.universitypanel.infrastructure.ui.LogoutBottomSheetContent
-import com.sadri.universitypanel.infrastructure.ui.ProfileTopAppBarWithBottomSheet
+import com.sadri.universitypanel.infrastructure.ui.ProfileTopAppBar
 import com.sadri.universitypanel.infrastructure.ui.ProgressBar
-import com.sadri.universitypanel.infrastructure.ui.theme.Shapes
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
 @Composable
-fun InstructorHomeScreen(
+fun InstructorGradeScreen(
   modifier: Modifier,
-  viewModel: InstructorHomeViewModel,
+  viewModel: InstructorGradeViewModel,
   navController: NavController
 ) {
   val viewState = viewModel.viewState.observeAsState().value!!
   val messageState = viewModel.message.observeAsState().value!!
 
-  val snackBarHostState = remember { SnackbarHostState() }
-  val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-    snackbarHostState = snackBarHostState,
-    bottomSheetState = rememberBottomSheetState(
-      initialValue = BottomSheetValue.Collapsed
-    )
-  )
-
-  val coroutineScope = rememberCoroutineScope()
   val scrollState = rememberLazyListState()
+  val snackBarHostState = remember { SnackbarHostState() }
+  val coroutineScope = rememberCoroutineScope()
 
-  BottomSheetScaffold(
-    scaffoldState = bottomSheetScaffoldState,
-    sheetBackgroundColor = MaterialTheme.colors.primary,
-    sheetShape = Shapes.large,
-    sheetContent = {
-      LogoutBottomSheetContent(
-        modifier = modifier,
-        coroutineScope = coroutineScope,
-        bottomSheetScaffoldState = bottomSheetScaffoldState
-      ) {
-        viewModel.logout()
-        navController.navigate(Screens.Login.route)
-      }
+  Scaffold(
+    scaffoldState = rememberScaffoldState(snackbarHostState = snackBarHostState),
+    floatingActionButton = {
+      ExtendedFloatingActionButton(
+        text = { Text(text = "Submit") },
+        onClick = { viewModel.submit() },
+        icon = {
+          Icon(
+            Icons.Filled.MarkChatRead,
+            "",
+            tint = Color.White
+          )
+        },
+        backgroundColor = MaterialTheme.colors.primary,
+        contentColor = Color.White
+      )
     },
-    sheetPeekHeight = 0.dp,
     topBar = {
-      ProfileTopAppBarWithBottomSheet(
-        username = viewState.name,
-        coroutineScope = coroutineScope,
-        bottomSheetScaffoldState = bottomSheetScaffoldState
+      ProfileTopAppBar(
+        text = "Students",
+        onBackClicked = {
+          navController.navigate(Screens.InstructorHome.route)
+        }
       )
     },
     content = {
@@ -90,32 +87,31 @@ fun InstructorHomeScreen(
       if (viewState.isLoading) {
         ProgressBar(modifier)
       }
-      SectionsList(
+      StudentsList(
         modifier = modifier,
-        sections = viewState.sections,
+        students = viewState.students,
         state = scrollState,
-        onItemClick = { id ->
-          navController.navigate(Screens.InstructorGrade.route.plus("/$id"))
+        onGradeChanged = { id, grade ->
+          viewModel.onGradeChanged(id, grade)
         }
       )
     }
   )
 }
 
-
 @Composable
-fun SectionsList(
-  sections: List<InstructorSectionResponse>,
+fun StudentsList(
+  students: List<SectionStudentResponse>,
   state: LazyListState,
   modifier: Modifier = Modifier,
-  onItemClick: (Int) -> Unit
+  onGradeChanged: (Int, String) -> Unit
 ) {
   LazyColumn(modifier = modifier, state = state) {
-    items(sections.size) { index ->
+    items(students.size) { index ->
       ListItem(
-        section = sections[index],
+        student = students[index],
         modifier = modifier,
-        onClick = onItemClick
+        onGradeChanged = onGradeChanged
       )
       Divider()
     }
@@ -124,21 +120,28 @@ fun SectionsList(
 
 @Composable
 fun ListItem(
-  section: InstructorSectionResponse,
+  student: SectionStudentResponse,
   modifier: Modifier = Modifier,
-  onClick: (Int) -> Unit
+  onGradeChanged: (Int, String) -> Unit
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
       .padding(16.dp)
-      .fillMaxWidth()
-      .clickable { onClick(section.id) }
   ) {
     Spacer(Modifier.width(10.dp))
     Text(
-      text = section.title,
+      text = student.name,
       modifier = modifier.padding(8.dp)
     )
+    OutlinedTextField(
+      value = student.grade,
+      onValueChange = { onGradeChanged(student.id, it) },
+      label = { Text(text = "Grade") },
+      modifier = modifier
+        .padding(8.dp)
+        .requiredWidth(71.dp)
+    )
+
   }
 }

@@ -9,14 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -30,26 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-@Composable
-fun SnackBar(
-  modifier: Modifier,
-  text: String,
-  dismiss: () -> Unit
-) {
-  Column {
-    Snackbar(
-      modifier = modifier.padding(8.dp),
-      action = {
-        Button(onClick = { dismiss() }) {
-          Text("Hide")
-        }
-      },
-    ) {
-      Text(text = text)
-    }
-  }
-}
 
 @Composable
 fun ProgressBar(modifier: Modifier = Modifier) {

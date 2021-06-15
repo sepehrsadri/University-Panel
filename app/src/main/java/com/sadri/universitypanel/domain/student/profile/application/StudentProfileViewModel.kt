@@ -27,8 +27,7 @@ class StudentProfileViewModel @Inject constructor(
         _viewState.value =
           StudentProfileViewState(
             name = userInfo.name,
-            number = userInfo.number,
-            isLoading = false
+            number = userInfo.number
           )
       }
     }

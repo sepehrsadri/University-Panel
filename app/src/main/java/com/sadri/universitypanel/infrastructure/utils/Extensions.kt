@@ -16,11 +16,12 @@ suspend fun <T> getResult(call: suspend () -> Response<T>): ApiResult<T> {
   return try {
     val response = call()
     val responseCode = response.code()
-    if (response.isSuccessful) {
+    return if (response.isSuccessful) {
       ApiResult.Success(
         response.body()
       )
     } else {
+      Timber.e(RuntimeException("Server Error with code $responseCode"))
       ApiResult.Error(
         text = "Server Error !",
         code = responseCode
@@ -28,7 +29,7 @@ suspend fun <T> getResult(call: suspend () -> Response<T>): ApiResult<T> {
     }
   } catch (e: Exception) {
     Timber.e(e)
-    ApiResult.Error(text = "Network Error !")
+    return ApiResult.Error(text = "Network Error !")
   }
 }
 
