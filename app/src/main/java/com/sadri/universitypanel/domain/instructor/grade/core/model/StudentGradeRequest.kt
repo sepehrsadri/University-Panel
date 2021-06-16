@@ -31,5 +31,5 @@ data class GradeRequest(
   @SerializedName("courseId")
   val courseId: Int,
   @SerializedName("grade")
-  val grade: String
+  val grade: String?
 )

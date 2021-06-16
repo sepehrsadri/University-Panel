@@ -136,7 +136,7 @@ fun ListItem(
       style = MaterialTheme.typography.h6
     )
     OutlinedTextField(
-      value = student.grade,
+      value = student.grade ?: "--",
       onValueChange = { onGradeChanged(student.id, it) },
       label = { Text(text = "Grade") },
       modifier = modifier

@@ -225,7 +225,7 @@ fun ListItem(
         style = MaterialTheme.typography.subtitle2
       )
       Text(
-        text = "Grade : ${studentCourse.grade}",
+        text = "Grade : ${studentCourse.grade ?: "--"}",
         style = MaterialTheme.typography.subtitle2
       )
       Text(

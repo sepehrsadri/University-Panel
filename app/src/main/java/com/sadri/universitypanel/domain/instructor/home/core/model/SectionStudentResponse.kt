@@ -8,5 +8,5 @@ data class SectionStudentResponse(
   @SerializedName("name")
   val name: String,
   @SerializedName("grade")
-  val grade: String
+  val grade: String?
 )

@@ -10,7 +10,7 @@ data class StudentCourseResponse(
   @SerializedName("semester")
   val semester: String,
   @SerializedName("grade")
-  val grade: String,
+  val grade: String?,
   @SerializedName("credits")
   val credits: Int
 )
