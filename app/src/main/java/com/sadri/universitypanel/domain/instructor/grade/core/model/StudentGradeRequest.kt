@@ -16,7 +16,7 @@ data class StudentGradeRequest(
         list.map {
           GradeRequest(
             sectionId = sectionId,
-            courseId = it.id,
+            studentId = it.id,
             grade = it.grade
           )
         }
@@ -28,8 +28,8 @@ data class StudentGradeRequest(
 data class GradeRequest(
   @SerializedName("sectionId")
   val sectionId: Int,
-  @SerializedName("courseId")
-  val courseId: Int,
+  @SerializedName("studentId")
+  val studentId: Int,
   @SerializedName("grade")
   val grade: String?
 )
