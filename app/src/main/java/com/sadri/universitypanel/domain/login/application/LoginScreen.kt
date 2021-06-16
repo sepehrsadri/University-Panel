@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sadri.universitypanel.R
@@ -128,7 +129,12 @@ fun LoginContent(
       value = password,
       onValueChange = { onPasswordChanged(it) },
       label = { Text(text = "Password") },
-      modifier = modifier.padding(8.dp)
+      modifier = modifier.padding(8.dp),
+      visualTransformation = PasswordVisualTransformation(),
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Password,
+        imeAction = ImeAction.Done
+      ),
     )
 
     RuleChips(
